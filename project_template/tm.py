@@ -44,8 +44,6 @@ class LemmaTokenizer(object):
 print "Recovering files... "
 doc_by_vocab=read('doc_by_vocab','p') 
 doc_by_vocab=recover_Matrix(doc_by_vocab,0,doc_by_vocab.shape[0]); print'document-term matrix loaded...'
-model=read('LDA_model','p'); print'LDA model loaded...'
-cv=read('LDA_vectorizer','p'); print 'vectorizor loaded'
 counts =read('LDA_trainingMatrix','p');print 'trainning_matrix loaded'
 counts=recover_Matrix(counts,0,counts.shape[0]); print 'training data loaded...'
 res= read('LDA_fittedMatrix','p'); print 'Fitted Topic Matrix loaded...'
@@ -136,7 +134,10 @@ def baseIR(query):
 print "done"
 
 from sklearn.decomposition import LatentDirichletAllocation as LDA
-
+cv = TfidfVectorizer(tokenizer=LemmaTokenizer(),stop_words='english', max_df=.9,min_df=10**(-6),
+                     max_features=5000)
+model = LDA(n_topics=n_topic, max_iter=10, n_jobs=1, verbose=0)
+res = model.fit_transform(counts)
 
 def categorize_top_words(model, feature_names, n_top_words):
     result=[]
