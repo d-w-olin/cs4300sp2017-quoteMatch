@@ -6,7 +6,7 @@
 
     <body>
         <div class="head">
-            <p class="head-title">Quote Matcher</p>
+            <p class="head-title">Quote Match</p>
             <p class="names">Ariel Gleitman (ag739)<br>Dean Olin (dwo27)<br>Galen Weld (gcw33)<br>Haotian Liu (hl678)</p>
         </div>
 
@@ -24,7 +24,7 @@
 
                 {% if output %}
 
-                    {% for score, quote, author in output %}
+                    {% for quote, author, score in output %}
                         <div class="quote">
                             <p>{{quote}}</p>
                             <p class="author">by {{author}}</p>

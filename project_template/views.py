@@ -5,7 +5,7 @@ from .models import Docs
 from django.template import loader
 from .form import QueryForm
 from .test import find_similar
-from .tm import baseIR
+from .tm import baseIR, TMRetrieval
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
@@ -16,7 +16,7 @@ def index(request):
     if request.GET.get('search'):
         search = request.GET.get('search')
         # output_list = find_similar(search)
-        output_list = baseIR(search)
+        output_list = TMRetrieval([search], 20)
         paginator = Paginator(output_list, 5)
         page = request.GET.get('page')
         try:
