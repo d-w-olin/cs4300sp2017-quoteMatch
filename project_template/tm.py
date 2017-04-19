@@ -136,6 +136,7 @@ print "done"
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 cv = TfidfVectorizer(tokenizer=LemmaTokenizer(),stop_words='english', max_df=.9,min_df=10**(-6),
                      max_features=5000)
+n_topic=20
 model = LDA(n_topics=n_topic, max_iter=10, n_jobs=1, verbose=0)
 res = model.fit_transform(counts)
 
