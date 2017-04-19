@@ -10,8 +10,36 @@ from nltk.tokenize import RegexpTokenizer
 from stemming.porter2 import stem
 from sklearn.feature_extraction.text import TfidfVectorizer
 import re
-with open('contractions.json','r') as con:
-    contractions_dict=json.load(con)
+import pickle
+import scipy.sparse as sps
+
+
+def read(filename,f):
+    with open(filename+'.'+f,'rb') as files:
+        if f=='p':
+            return pickle.load(files)
+        elif f=='json':
+            return json.load(files)
+        else:
+            print('check format please.')
+def recover_Matrix(Sparse,m,n):
+    ip = Sparse.indptr[m:n].copy()
+    d = Sparse.data[ip[0]:ip[-1]]
+    i = Sparse.indices[ip[0]:ip[-1]]
+    ip -= ip[0]
+    rows = sps.csr_matrix((d, i, ip))
+    return rows
+
+print "Recovering files... "
+doc_by_vocab=read('doc_by_vocab','p') 
+doc_by_vocab=recover_Matrix(doc_by_vocab,0,doc_by_vocab.shape[0]) print'document-term matrix loaded...'
+model=read('LDA_model','p') print'LDA model loaded...'
+cv=read('LDA_trainingMatrix','p') 
+cv=recover_Matrix(cv,0,cv.shape[0]) print 'training data loaded...'
+res= read('LDA_fittedMatrix','p') print 'Fitted Topic Matrix loaded...'
+vocab_to_index=read('vocab_to_index','json') print 'vocab_to_index loaded...'
+index_to_vocab=read('index_to_vocab','json') print 'index_to_vocab loaded...'
+contractions_dict=read('contractions','json') print 'contractions dictionary loaded...'
 
 print "constructing tokenizer"
 #Construct a Tokenizer that deals with contractions 
@@ -42,17 +70,6 @@ with open('quotes.csv','rb') as f:
     for row in reader:
         ID_to_quote[int(row[0])]=row[2]
         ID_to_author[int(row[0])]=row[1]
-
-n_feats=5000;#Assuming the word usages are not more diverse than the movie scripts
-print "building tfidf vector"
-tfidf_vec = TfidfVectorizer('content',tokenizer=LemmaTokenizer(),min_df=5,max_df=0.8,max_features=n_feats,norm=None )
-print "building doc_by_vocab matrix"
-doc_by_vocab=tfidf_vec.fit_transform([quote for quote in ID_to_quote.values()])
-# Construct a inverted map from feature index to feature value (word) for later use
-index_to_vocab = {i:v for i, v in enumerate(tfidf_vec.get_feature_names())}
-vocab_to_index={v:i for i,v in enumerate(tfidf_vec.get_feature_names())}
-doc_by_vocab = doc_by_vocab.toarray()
-valid_type=tfidf_vec.get_feature_names()
 
 "building inverted index"
 def build_inverted_index(msgs):
@@ -118,14 +135,6 @@ print "done"
 
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 
-cv = TfidfVectorizer(tokenizer=LemmaTokenizer(),stop_words='english', max_df=.9,min_df=10**(-6),
-                     max_features=5000)
-counts = cv.fit_transform([quote for quote in ID_to_quote.values()])
-feature_names = cv.get_feature_names()
-
-n_topic = 20
-model = LDA(n_topics=n_topic, max_iter=10, n_jobs=1, verbose=0)
-res = model.fit_transform(counts)
 
 def categorize_top_words(model, feature_names, n_top_words):
     result=[]
