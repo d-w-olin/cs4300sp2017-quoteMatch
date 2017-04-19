@@ -14,7 +14,7 @@
             <form class="form-group" method='GET'>
                 <p class="title">Enter Query Here</p>
                 <div class="form-group">
-                    <textarea id="input" type="text" name="search" class="form-control" placeholder="Your Input" rows="15"></textarea>
+                    <textarea id="input" type="text" name="search" class="form-control" placeholder="Your Input" rows="15">{% if input %}{{input}}{% endif %}</textarea>
                 </div>
                 <button type="submit" class="btn btn-info">GO</button>
             </form>
@@ -24,10 +24,10 @@
 
                 {% if output %}
 
-                    {% for doc, line in output %}
+                    {% for score, quote, author in output %}
                         <div class="quote">
-                            <p>{{line}}</p>
-                            <p class="author">by {{doc}}</p>
+                            <p>{{quote}}</p>
+                            <p class="author">by {{author}}</p>
                         </div>
                     {% endfor %}
 

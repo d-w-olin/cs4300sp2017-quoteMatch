@@ -5,15 +5,18 @@ from .models import Docs
 from django.template import loader
 from .form import QueryForm
 from .test import find_similar
+from .tm import baseIR
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 def index(request):
     output_list = ''
-    output=''
+    output= ''
+    search = ''
     if request.GET.get('search'):
         search = request.GET.get('search')
-        output_list = find_similar(search)
+        # output_list = find_similar(search)
+        output_list = baseIR(search)
         paginator = Paginator(output_list, 5)
         page = request.GET.get('page')
         try:
@@ -23,6 +26,7 @@ def index(request):
         except EmptyPage:
             output = paginator.page(paginator.num_pages)
     return render_to_response('project_template/index.html', 
-                          {'output': output,
+                          {'input': search,
+                           'output': output,
                            'magic_url': request.get_full_path(),
                            })
