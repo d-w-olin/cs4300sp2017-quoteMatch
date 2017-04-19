@@ -30,6 +30,17 @@ def recover_Matrix(Sparse,m,n):
     rows = sps.csr_matrix((d, i, ip))
     return rows
 
+class LemmaTokenizer(object):
+    def __init__(self):
+            self.wnl = stem
+    def __call__(self, doc,stemming=True):
+        #stemming is a boolean value indicating if the results need to be stemmed
+        if stemming==True:
+            return [stem(t) for t in regtokenizer.tokenize(expand_contractions(doc.lower()))]
+        else:
+            return [t for t in regtokenizer.tokenize(expand_contractions(doc.lower()))]
+
+
 print "Recovering files... "
 doc_by_vocab=read('doc_by_vocab','p') 
 doc_by_vocab=recover_Matrix(doc_by_vocab,0,doc_by_vocab.shape[0]); print'document-term matrix loaded...'
@@ -51,16 +62,6 @@ def expand_contractions(s, contractions_dict=contractions_dict):
     def replace(match):
         return contractions_dict[match.group(0)]
     return contractions_re.sub(replace, s)
-
-class LemmaTokenizer(object):
-    def __init__(self):
-            self.wnl = stem
-    def __call__(self, doc,stemming=True):
-        #stemming is a boolean value indicating if the results need to be stemmed
-        if stemming==True:
-            return [stem(t) for t in regtokenizer.tokenize(expand_contractions(doc.lower()))]
-        else:
-            return [t for t in regtokenizer.tokenize(expand_contractions(doc.lower()))]
 
 print "constructing index"
 #Construct Index 
