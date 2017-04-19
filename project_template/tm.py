@@ -32,14 +32,14 @@ def recover_Matrix(Sparse,m,n):
 
 print "Recovering files... "
 doc_by_vocab=read('doc_by_vocab','p') 
-doc_by_vocab=recover_Matrix(doc_by_vocab,0,doc_by_vocab.shape[0]) print'document-term matrix loaded...'
-model=read('LDA_model','p') print'LDA model loaded...'
+doc_by_vocab=recover_Matrix(doc_by_vocab,0,doc_by_vocab.shape[0]); print'document-term matrix loaded...'
+model=read('LDA_model','p'); print'LDA model loaded...'
 cv=read('LDA_trainingMatrix','p') 
-cv=recover_Matrix(cv,0,cv.shape[0]) print 'training data loaded...'
-res= read('LDA_fittedMatrix','p') print 'Fitted Topic Matrix loaded...'
-vocab_to_index=read('vocab_to_index','json') print 'vocab_to_index loaded...'
-index_to_vocab=read('index_to_vocab','json') print 'index_to_vocab loaded...'
-contractions_dict=read('contractions','json') print 'contractions dictionary loaded...'
+cv=recover_Matrix(cv,0,cv.shape[0]); print 'training data loaded...'
+res= read('LDA_fittedMatrix','p'); print 'Fitted Topic Matrix loaded...'
+vocab_to_index=read('vocab_to_index','json'); print 'vocab_to_index loaded...'
+index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
+contractions_dict=read('contractions','json'); print 'contractions dictionary loaded...'
 
 print "constructing tokenizer"
 #Construct a Tokenizer that deals with contractions 
