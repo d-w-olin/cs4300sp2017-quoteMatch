@@ -128,7 +128,7 @@ def baseIR(query):
             score[docID-1]+=tfidf*qCounter[qword]*idf[qword]/(1.0*(docnorms[docID-1]*qnorm))
     for dID in ID_to_quote.keys():
         results.append((ID_to_quote[dID],ID_to_author[dID],score[dID-1])) 
-    results.sort(key=lambda x: x[0],reverse=True)
+    results.sort(key=lambda x: x[2],reverse=True)
     return results
 
 print "done"
