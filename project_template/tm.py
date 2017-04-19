@@ -127,40 +127,40 @@ def baseIR(query):
         for docID,tfidf in all_docs:
             score[docID-1]+=tfidf*qCounter[qword]*idf[qword]/(1.0*(docnorms[docID-1]*qnorm))
     for dID in ID_to_quote.keys():
-        results.append((score[dID-1],ID_to_quote[dID],ID_to_author[dID])) 
+        results.append((ID_to_quote[dID],ID_to_author[dID],score[dID-1])) 
     results.sort(key=lambda x: x[0],reverse=True)
     return results
 
 print "done"
 
-from sklearn.decomposition import LatentDirichletAllocation as LDA
-cv = TfidfVectorizer(tokenizer=LemmaTokenizer(),stop_words='english', max_df=.9,min_df=10**(-6),
-                     max_features=5000)
-cv.fit([quote for quote in ID_to_quote.values()])
-n_topic=20
-model = LDA(n_topics=n_topic, max_iter=10, n_jobs=1, verbose=0)
-res = model.fit_transform(counts)
+# from sklearn.decomposition import LatentDirichletAllocation as LDA
+# cv = TfidfVectorizer(tokenizer=LemmaTokenizer(),stop_words='english', max_df=.9,min_df=10**(-6),
+#                      max_features=5000)
+# cv.fit([quote for quote in ID_to_quote.values()])
+# n_topic=20
+# model = LDA(n_topics=n_topic, max_iter=10, n_jobs=1, verbose=0)
+# res = model.fit_transform(counts)
 
-def categorize_top_words(model, feature_names, n_top_words):
-    result=[]
-    for topic_idx, topic in enumerate(model.components_):
-        st=" ".join([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]])
-        result.append(st)
-    return result
+# def categorize_top_words(model, feature_names, n_top_words):
+#     result=[]
+#     for topic_idx, topic in enumerate(model.components_):
+#         st=" ".join([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]])
+#         result.append(st)
+#     return result
 
-def TMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
-    query = cv.transform(s)
-    unnormalized = np.matrix(model.transform(query))
-    normalized=unnormalized/unnormalized.sum(axis =1)
+# def TMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
+#     query = cv.transform(s)
+#     unnormalized = np.matrix(model.transform(query))
+#     normalized=unnormalized/unnormalized.sum(axis =1)
 
-    all_scores = []
-    for i,data in enumerate(res):
-        all_scores.append(similarity_measure(np.asarray(data).reshape(-1),np.asarray(normalized).reshape(-1)))
+#     all_scores = []
+#     for i,data in enumerate(res):
+#         all_scores.append(similarity_measure(np.asarray(data).reshape(-1),np.asarray(normalized).reshape(-1)))
     
 
-    top20=np.asarray(all_scores).argsort()[reverse*rank:]
-    result = []
-    for index in top20:
-        result.append((ID_to_quote[index+1],ID_to_author[index+1],all_scores[index]))
-    return result
+#     top20=np.asarray(all_scores).argsort()[reverse*rank:]
+#     result = []
+#     for index in top20:
+#         result.append((ID_to_quote[index+1],ID_to_author[index+1],all_scores[index]))
+#     return result
 
