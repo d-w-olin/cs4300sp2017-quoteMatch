@@ -31,14 +31,28 @@
             </div>
 
             <div class="right form-inline global-search">
-                <p class="title">Results</p>
+                <div class="results-title">
+                    <p class="title">Results</p>
+                    <p class="title">
+                        <a onclick="showHiddenContent()">I want to improve my results!</a>
+                    </p>
+                </div>
+                <div class="hidden hidden-content">
+                    <p>Select the top quotes from the first 15 results, and we'll improve your query's results!</p>
+                    <button type="submit" class="btn btn-info">RECALCULATE</button>
+                </div>
 
                 {% if output %}
-
+                    <!-- to check if checkbox is checked, run
+                         $("input[name='rocchio']").each(function(i, d) {console.log(d.checked);}) -->
+                     <!-- need to change output so that it also includes quote id so value can be quote id -->
                     {% for quote, author, score in output %}
                         <div class="quote">
-                            <p>{{quote}}</p>
-                            <p class="author">by {{author}}</p>
+                            <div class="quote-content">
+                                <p>{{quote}}</p>
+                                <p class="author">by {{author}}</p>
+                            </div>
+                            <input class="hidden hidden-content" type="checkbox" name="rocchio" value="{{quote}}">
                         </div>
                     {% endfor %}
 
@@ -68,7 +82,7 @@
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
         <script>
-            $(".quote").on("click", function(){
+            $(".quote-content").on("click", function(){
                 if ($(".active").length > 0) {
                     $(".active")[0].classList.remove("active");
                 }
@@ -92,7 +106,20 @@
                         }
                     }
                 });  
-            })
+            });
+
+            function showHiddenContent() {
+                if ($(".results-title + .hidden-content")[0].classList.length == 1) {
+                    // about to retoggle to hidden
+                    $(".results-title p a")[0].innerHTML = "I want to improve my results!";
+                } else {
+                    $(".results-title p a")[0].innerHTML = "I don't want to improve my results";
+                }
+
+                $(".hidden-content").each(function(i, d) {
+                    d.classList.toggle("hidden");
+                });
+            }
         </script>
     </body>
 </html>

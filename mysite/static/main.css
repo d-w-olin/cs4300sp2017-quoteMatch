@@ -45,6 +45,33 @@ body {
     text-transform: uppercase;
 }
 
+.results-title {
+    align-items: center;
+    display: flex;
+}
+
+.results-title .title:first-of-type {
+    flex: 0 1 60%;
+}
+
+.results-title .title:last-of-type {
+    cursor: pointer;
+    flex: 0 1 40%;
+    font-size: 8px;
+    text-align: right;
+}
+
+.hidden {
+    margin: 0;
+    max-height: 0px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.hidden-content {
+    transition: max-height ease-in-out 1s, opacity ease-in-out 1s;
+}
+
 /* HEAD STYLES */
 .head {
     align-items: center;
@@ -120,15 +147,21 @@ body {
 
 /* QUOTE STYLE */
 .quote {
-    background-color: #e6f7ff;
+    align-items: center;
+    display: flex;
+}
+
+.quote .quote-content {
+    background-color: #fff;
     border: 1px solid #f2f2f2;
     border-radius: 5px;
     padding: 10px;
     margin: 10px 0;
+    width: 100%;
 }
 
-.quote:nth-of-type(2n) {
-    background-color: #fff;
+.quote:nth-of-type(2n) .quote-content {
+    background-color: #e6f7ff;
 }
 
 .quote .author {
@@ -136,7 +169,7 @@ body {
     text-transform: uppercase;
 }
 
-.quote.active {
+.quote .quote-content.active {
     background-color: #fffee6;
     border-color: #fff500;
 }
