@@ -21,7 +21,7 @@ body {
 
 @media (min-width: 1200px) {
     .container {
-        max-width: 970px;
+        max-width: 1000px;
         width: 100%;
     }
 }
@@ -33,7 +33,7 @@ body {
     }
 
     .container > * {
-        margin: 0 15px;
+        margin: 0 30px;
         width: 100%;
     }
 }
@@ -66,9 +66,14 @@ body {
 
 /* WIKIPEDIA STYLE */
 .wikipedia {
-    align-items: center;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     min-height: 200px;
+}
+
+#wiki-title {
+    margin: 5px 0;
 }
 
 /* FORM STYLE */

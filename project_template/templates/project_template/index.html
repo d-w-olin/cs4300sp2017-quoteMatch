@@ -15,6 +15,7 @@
             <div class="left">
                 {% if output %}
                     <div class="wikipedia">
+                        <p id="wiki-title" class="title"></p>
                         <p id="wiki-text">Click on a quote to learn more about its author</p>
                     </div>
                 {% endif %}
@@ -64,9 +65,34 @@
 
                 {% endif %}
             </div>
-
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-        <script src="/static/wiki.js"></script>
+        <script>
+            $(".quote").on("click", function(){
+                if ($(".active").length > 0) {
+                    $(".active")[0].classList.remove("active");
+                }
+                this.classList.add("active");
+
+                var author = $(".active .author")[0].innerHTML.substr(3);
+                console.log("learning more about " + author);
+                $.ajax({
+                    url: "getWiki",
+                    data: {
+                        "author": author
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        if (data.extraction == "") {
+                            $("#wiki-title").html("");
+                            $("#wiki-text").html("Information on " + author + " unavailable. Try checking <a target='_blank' href='" + data.pageurl + "'>this link</a> to learn more.");
+                        } else {
+                            $("#wiki-title").html("From <a href='" + data.pageurl + "' target='_blank'>Wikipedia</a>...");
+                            $("#wiki-text").html(data.extraction);
+                        }
+                    }
+                });  
+            })
+        </script>
     </body>
 </html>

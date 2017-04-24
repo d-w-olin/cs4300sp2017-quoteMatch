@@ -5,6 +5,8 @@ from .models import Docs
 from django.template import loader
 from .form import QueryForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import JsonResponse
+import urllib, json
 
 # Create your views here.
 def index(request):
@@ -38,3 +40,21 @@ def index(request):
                            'output': output,
                            'magic_url': request.get_full_path(),
                            })
+
+def getWiki(request):
+    """
+    returns page url and text excerpt
+    """
+    author = request.GET.get('author', None)
+    url = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=' + urllib.quote(author)
+    try:
+        response = urllib.urlopen(url)
+        data = json.loads(response.read())
+        pageid = data['query']['pages'].keys()[0]
+        pageurl = 'https://en.wikipedia.org/?curid=' + pageid
+        extraction = data['query']['pages'][pageid]['extract']
+    except Exception as e:
+        pageurl = 'https://en.wikipedia.org/wiki/Special:Search?search=' + urllib.quote_plus(author) + '&go=Go'
+        extraction = ''
+    finally:
+        return JsonResponse({'pageurl': pageurl, 'extraction': extraction})
