@@ -14,6 +14,7 @@
             <form class="form-group" method='GET'>
                 <p class="title">Enter Query Here</p>
                 <div class="form-group">
+                    <input type="hidden" name="version" value="v1">
                     <textarea id="input" type="text" name="search" class="form-control" placeholder="Your Input" rows="15">{% if input %}{{input}}{% endif %}</textarea>
                 </div>
                 <button type="submit" class="btn btn-info">GO</button>
