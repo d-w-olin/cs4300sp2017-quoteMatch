@@ -64,6 +64,13 @@ body {
     text-align: end;
 }
 
+/* WIKIPEDIA STYLE */
+.wikipedia {
+    align-items: center;
+    display: flex;
+    min-height: 200px;
+}
+
 /* FORM STYLE */
 .form-control {
     border: 1px solid #f2f2f2;
@@ -122,4 +129,9 @@ body {
 .quote .author {
     font-size: 10px;
     text-transform: uppercase;
+}
+
+.quote.active {
+    background-color: #fffee6;
+    border-color: #fff500;
 }

@@ -11,16 +11,25 @@
         </div>
 
         <div class="container">
-            <form class="form-group" method='GET'>
-                <p class="title">Enter Query Here</p>
-                <div class="form-group">
-                    <input type="hidden" name="version" value="v1">
-                    <textarea id="input" type="text" name="search" class="form-control" placeholder="Your Input" rows="15">{% if input %}{{input}}{% endif %}</textarea>
-                </div>
-                <button type="submit" class="btn btn-info">GO</button>
-            </form>
 
-            <div class="form-inline global-search">
+            <div class="left">
+                {% if output %}
+                    <div class="wikipedia">
+                        <p id="wiki-text">Click on a quote to learn more about its author</p>
+                    </div>
+                {% endif %}
+
+                <form class="form-group" method="GET">
+                    <p class="title">Enter Query Here</p>
+                    <div class="form-group">
+                        <input type="hidden" name="version" value="v1">
+                        <textarea id="input" type="text" name="search" class="form-control" placeholder="Your Input" rows="15">{% if input %}{{input}}{% endif %}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-info">GO</button>
+                </form>
+            </div>
+
+            <div class="right form-inline global-search">
                 <p class="title">Results</p>
 
                 {% if output %}
@@ -57,5 +66,7 @@
             </div>
 
         </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+        <script src="/static/wiki.js"></script>
     </body>
 </html>
