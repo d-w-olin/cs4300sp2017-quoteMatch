@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import re
 import pickle
 import scipy.sparse as sps
-
+import csv
 
 def read(filename,f):
     with open(filename+'.'+f,'rb') as files:
@@ -78,19 +78,18 @@ def expand_contractions(s, contractions_dict=contractions_dict):
 
 
 def TMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
-     query = cv.transform(s)
-     unnormalized = np.matrix(model.transform(query))
-     normalized=unnormalized/unnormalized.sum(axis =1)
-     all_scores = []
-     for i,data in enumerate(res):
-         all_scores.append(similarity_measure(np.asarray(data).reshape(-1),np.asarray(normalized).reshape(-1)))
-    
+    query = cv.transform(s)
+    unnormalized = np.matrix(model.transform(query))
+    normalized=unnormalized/unnormalized.sum(axis =1)
+    all_scores = []
+    for i,data in enumerate(res):
+        all_scores.append(similarity_measure(np.asarray(data).reshape(-1),np.asarray(normalized).reshape(-1)))
 
-     top20=np.asarray(all_scores).argsort()[reverse*rank:]
+    top20=np.asarray(all_scores).argsort()[reverse*rank:]
     result = []
-     for index in top20:
-         result.append((ID_to_quote[index+1],ID_to_author[index+1],all_scores[index]))
-     return result
+    for index in top20:
+        result.append((ID_to_quote[index+1],ID_to_author[index+1],all_scores[index]))
+    return result
 
 #===================================================Biterm Model=====================================
 def biterm_prior(biterms):
@@ -140,8 +139,7 @@ def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     
 
     top20=np.asarray(all_scores).argsort()[0:rank]
-    print("\n")
+    result = []
     for index in top20:
-        print (ID_to_quote[index+1],ID_to_author[index+1],all_scores[index])
-        print ('\n')
-    return top20
+        result.append((ID_to_quote[index+1],ID_to_author[index+1],all_scores[index]))
+    return result

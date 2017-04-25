@@ -19,12 +19,16 @@ def index(request):
         print 'using version {}'.format(version)
         if version == 'v1':
             from .v1 import baseIR
+        if version == 'v2':
+            from .v2 import BTMRetrieval
 
         if request.GET.get('search'):
             search = request.GET.get('search')
 
             if version == 'v1':
                 output_list = baseIR(search)
+            if version == 'v2':
+                output_list = BTMRetrieval(search, 100)
 
             paginator = Paginator(output_list, 15)
             page = request.GET.get('page')
