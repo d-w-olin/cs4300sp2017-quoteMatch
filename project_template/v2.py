@@ -54,6 +54,7 @@ contractions_dict=read('contractions','json'); print 'contractions dictionary lo
 phiwz=read('phiwz','p');print 'word-topic distribution loaded'
 theta_z=read('thetaz','p');print 'topic distribution loaded'
 biterm_matrix=read('biterm_matrix1','p');print 'biterm_matrix loaded'
+stop_words=read('stop_words','p');print 'stop_words loaded'
 
 print "constructing index"
 #Construct Index 
