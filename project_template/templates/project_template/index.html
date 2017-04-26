@@ -104,6 +104,7 @@
                             $("#wiki-title").html("From <a href='" + data.pageurl + "' target='_blank'>Wikipedia</a>...");
                             $("#wiki-text").html(data.extraction);
                         }
+                        $("html, body").animate({ scrollTop: 0 }, "slow");
                     }
                 });  
             });

@@ -50,7 +50,7 @@ def getWiki(request):
     returns page url and text excerpt
     """
     author = request.GET.get('author', None)
-    url = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=' + urllib.quote(author)
+    url = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&redirects=1&titles=' + urllib.quote(author)
     try:
         response = urllib.urlopen(url)
         data = json.loads(response.read())
