@@ -122,6 +122,11 @@ def topic_given_biterm(z,biterm,theta_z,pWZ):
 def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     bow = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
     print(len(bow))
+    
+    print 'testing vocab_to_index'
+    
+    print len(vocab_to_index.keys())
+    
     result=get_biterms(bow,vocab_to_index)
     print (len(result))
     topic_doc=[]
