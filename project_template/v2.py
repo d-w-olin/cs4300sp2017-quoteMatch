@@ -79,8 +79,8 @@ def expand_contractions(s, contractions_dict=contractions_dict):
 
 
 def TMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
-    query = cv.transform(s)
-    unnormalized = np.matrix(model.transform(query))
+    query_tokens = cv.transform(s)
+    unnormalized = np.matrix(model.transform(query_tokens))
     normalized=unnormalized/unnormalized.sum(axis =1)
     all_scores = []
     for i,data in enumerate(res):
@@ -120,9 +120,9 @@ def topic_given_biterm(z,biterm,theta_z,pWZ):
 
 
 def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
-    bow = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
-    print(len(bow))
-    result=get_biterms(bow,vocab_to_index_bi)
+    query_tokens = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
+    print(len(query_tokens))
+    result=get_biterms(query_tokens,vocab_to_index_bi)
     print (len(result))
     topic_doc=[]
     prior = biterm_prior(result)
