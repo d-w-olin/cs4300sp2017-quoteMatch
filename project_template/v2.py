@@ -47,7 +47,7 @@ cv=read('LDA_model','p'); print 'Vectorizer loaded'
 counts =read('LDA_trainingMatrix','p');print 'trainning_matrix loaded'
 counts=recover_Matrix(counts,0,counts.shape[0]); print 'training data loaded...'
 res= read('LDA_fittedMatrix','p'); print 'Fitted Topic Matrix loaded...'
-vocab_to_index=read('vocab_to_index','json'); print 'vocab_to_index loaded...'
+vocab_to_index_bi=read('vocab_to_index_bi','p'); print 'vocab_to_index for biterm loaded...'
 index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
 contractions_dict=read('contractions','json'); print 'contractions dictionary loaded...'
 # Otherwise use biterm model
@@ -127,7 +127,7 @@ def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     
     print len(vocab_to_index.keys())
     
-    result=get_biterms(bow,vocab_to_index)
+    result=get_biterms(bow,vocab_to_index_bi)
     print (len(result))
     topic_doc=[]
     prior = biterm_prior(result)
