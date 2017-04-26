@@ -47,7 +47,7 @@ cv=read('LDA_model','p'); print 'Vectorizer loaded'
 counts =read('LDA_trainingMatrix','p');print 'trainning_matrix loaded'
 counts=recover_Matrix(counts,0,counts.shape[0]); print 'training data loaded...'
 res= read('LDA_fittedMatrix','p'); print 'Fitted Topic Matrix loaded...'
-vocab_to_index_bi=read('vocab_to_index_bi','json'); print 'vocab_to_index for biterm loaded...'
+vocab_to_index_bi=read('vocab_to_index_1','json'); print 'vocab_to_index for biterm loaded...'
 index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
 contractions_dict=read('contractions','json'); print 'contractions dictionary loaded...'
 # Otherwise use biterm model
