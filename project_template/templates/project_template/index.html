@@ -39,12 +39,10 @@
                 </div>
                 <div class="hidden hidden-content">
                     <p>Select the top quotes from the first 15 results, and we'll improve your query's results!</p>
-                    <button type="submit" class="btn btn-info">RECALCULATE</button>
+                    <button type="submit" class="btn btn-info" onclick="rocchio()">RECALCULATE</button>
                 </div>
 
                 {% if output %}
-                    <!-- to check if checkbox is checked, run
-                         $("input[name='rocchio']").each(function(i, d) {console.log(d.checked);}) -->
                      <!-- need to change output so that it also includes quote id so value can be quote id -->
                     {% for quote, author, score in output %}
                         <div class="quote">
@@ -119,6 +117,26 @@
 
                 $(".hidden-content").each(function(i, d) {
                     d.classList.toggle("hidden");
+                });
+            }
+
+            function rocchio() {
+                relevant = []
+                $("input[name='rocchio']").each(function(i, d) {
+                    if (d.checked) {
+                        relevant.push(d.value);
+                    }
+                })
+
+                $.ajax({
+                    url: "rocchio",
+                    data: {
+                        "relevant": relevant
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        console.log("'success'");
+                    }
                 });
             }
         </script>
