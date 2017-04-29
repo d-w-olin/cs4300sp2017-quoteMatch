@@ -66,3 +66,28 @@ def getWiki(request):
 
 
 def newGetWiki(request):
+    try:
+        summary = wikipedia.summary(request)
+        return summary
+
+    except Exception as e:
+        return "No information found for "+request+" on Wikipedia."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
