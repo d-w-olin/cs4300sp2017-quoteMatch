@@ -70,6 +70,7 @@ def newGetWiki(request):
     try:
         page = wikipedia.page(author)
         pageurl = page.url
+        extraction = page.summary
 
     except Exception as e:
         pageurl = 'https://en.wikipedia.org/wiki/Special:Search?search=' + urllib.quote_plus(author) + '&go=Go'
