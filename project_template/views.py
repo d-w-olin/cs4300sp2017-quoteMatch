@@ -68,11 +68,15 @@ def getWiki(request):
 def newGetWiki(request):
     author = request.GET.get('author', None)
     try:
-        summary = wikipedia.summary(author)
-        return summary
+        page = wikipedia.page(author)
+        pageurl = page.url
 
     except Exception as e:
-        return "No information found for "+author+" on Wikipedia."
+        pageurl = 'https://en.wikipedia.org/wiki/Special:Search?search=' + urllib.quote_plus(author) + '&go=Go'
+        extraction = "No information found for "+author+" on Wikipedia."
+
+    finally:
+        return JsonResponse({'pageurl': pageurl, 'extraction': extraction})
 
 
 
