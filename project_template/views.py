@@ -66,12 +66,13 @@ def getWiki(request):
 
 
 def newGetWiki(request):
+    author = request.GET.get('author', None)
     try:
-        summary = wikipedia.summary(request)
+        summary = wikipedia.summary(author)
         return summary
 
     except Exception as e:
-        return "No information found for "+request+" on Wikipedia."
+        return "No information found for "+author+" on Wikipedia."
 
 
 
