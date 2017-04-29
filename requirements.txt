@@ -9,4 +9,4 @@ stemming==1.0.1
 sklearn==0.0
 numpy==1.10.4
 scipy==0.16.0
-wikipedia=1.4.0
+wikipedia==1.4.0

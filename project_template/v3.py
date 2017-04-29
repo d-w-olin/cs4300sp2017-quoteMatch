@@ -149,22 +149,19 @@ def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
 
   ##=====================================================Rocchio Update==========================================================
   ##Use Rocchio updating to update user query
-  def irrelevant(docs, all_docs):
-    return set(all_docs)-set(docs)
+  #def irrelevant(docs, all_docs):
+  #  return set(all_docs)-set(docs)
   
   def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
     # docs as list of IDs and query is the original query (in the form of a vector)
     # Now we treat each doc in docs as 'relevant' and all_docs-docs as irrelevant
-    other_docs=list(irrelevant(docs, all_docs))
+    #other_docs=list(irrelevant(docs, all_docs))
     
     #denote tuning parameters as \alpha, \beta and \theta
-    query_modified = alpha*query+beta*matrix[docs-1,:].sum(axis=0)/len(docs)-theta*matrix[other_docs-1,:].sum(axis=0)/len(other_docs)
+    query_modified = alpha*query+beta*matrix[docs-1,:].sum(axis=0)/len(docs)#-theta*matrix[other_docs-1,:].sum(axis=0)/len(other_docs)
     return query_modified
   
   
-  ##=========================================== Predicting Author
-  def author_prediction()
-  
-  
-  
-  
+
+
+
