@@ -7,6 +7,7 @@ from .form import QueryForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 import urllib, json
+import wikipedia
 
 # Create your views here.
 def index(request):
@@ -62,3 +63,6 @@ def getWiki(request):
         extraction = ''
     finally:
         return JsonResponse({'pageurl': pageurl, 'extraction': extraction})
+
+
+def newGetWiki(request):
