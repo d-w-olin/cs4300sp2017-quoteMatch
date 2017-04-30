@@ -56,16 +56,6 @@ phiwz=read('phiwz','p');print 'word-topic distribution loaded'
 theta_z=read('thetaz','p');print 'topic distribution loaded'
 biterm_matrix=read('biterm_matrix1','p');print 'biterm_matrix loaded'
 stop_words=read('stop_words','p');print 'stop_words loaded'
-
-print "constructing index"
-#Construct Index 
-ID_to_author=defaultdict(str)
-ID_to_quote=defaultdict(str)
-with open('quotes.csv','rb') as f:
-    reader=csv.reader(f)
-    for row in reader:
-        ID_to_quote[int(row[0])]=row[2]
-        ID_to_author[int(row[0])]=row[1]
         
         
 print "constructing tokenizer"
@@ -90,7 +80,7 @@ def TMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     top20=np.asarray(all_scores).argsort()[reverse*rank:]
     result = []
     for index in top20:
-        result.append((ID_to_quote[index+1],ID_to_author[index+1],all_scores[index]))
+        result.append((ID_to_quote[index],ID_to_author[index+1],all_scores[index]))
     return result
 
 #===================================================Biterm Model=====================================
@@ -141,8 +131,8 @@ def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     top20=np.asarray(all_scores).argsort()[0:rank]
     result = []
     for index in top20:
-        result.append((ID_to_quote[index+1],ID_to_author[index+1],all_scores[index]))
-        print "{}: {}\n\n".format(ID_to_quote[index+1], all_scores[index])
+        result.append((ID_to_quote[index],ID_to_author[index],all_scores[index]))
+        print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
     return result
 
   ##=====================================================Rocchio Update==========================================================
