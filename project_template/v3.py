@@ -59,7 +59,7 @@ topic_prediction_model=read('topic_prediction_model','p');print 'topic predictio
 author_matrix_compressed = read('author_matrix_compressed','p'); print 'author matrix (after SVD) loaded'
 author_matrix = read('author_matrix','p'); print 'author matrix (before SVD) loaded'
 author_prediction_vectorizer=read('author_prediction_vectorizer','p');print 'author prediction vectorizer loaded'
-
+topic_list = read('all_topics_prediction','p'); print 'all topic loaded'
 
 ## Topic Model:
 cv=read('LDA_model','p'); print 'Vectorizer loaded'
@@ -129,18 +129,21 @@ def topic_given_biterm(z,biterm,theta_z,pWZ):
     return result
 
 
-def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
+def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=entropy,reverse=-1):
+    if filter_by !=False:
+        indexes= np.where(topic_lists==filter_by)[0]
+        matrix = np.matrix(matrix)[np.array(indexes),:]
     query_tokens = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
     result=get_biterms(query_tokens,vocab_to_index_bi)
     topic_doc=[]
     prior = biterm_prior(result)
-    for z in range(110):
+    for z in range(20):
         s=0
         for word in result:
             s+=topic_given_biterm(z,word,theta_z,phiwz)*prior[word]
         topic_doc.append(s)
     all_scores = []
-    for i,data in enumerate(biterm_matrix):
+    for i,data in enumerate(matrix):
         if similarity_measure(np.asarray(data).reshape(-1),np.asarray(topic_doc).reshape(-1))==float('inf'):
                 all_scores.append(10000) # if the matrix has no biterm in it, then set the divergence to 10000
         else:
@@ -149,11 +152,16 @@ def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
 
     top20=np.asarray(all_scores).argsort()[0:rank]
     result = []
-    for index in top20:
-        result.append((ID_to_quote[index],ID_to_author[index],all_scores[index]))
-        print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
-    return result
-
+    if filter_by ==False:
+        for index in top20:
+            result.append((ID_to_quote[index],ID_to_author[index],all_scores[index]))
+            print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
+        return result
+    else:
+        for index in top20:
+            result.append((ID_to_quote[indexes[index]],ID_to_author[indexes[index]],all_scores[index]))
+            print "{}: {}\n\n".format(ID_to_quote[indexes[index]], all_scores[index])
+        return result
   ##=====================================================Rocchio Update==========================================================
   ##Use Rocchio updating to update user query
   #def irrelevant(docs, all_docs):
