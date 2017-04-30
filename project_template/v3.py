@@ -8,6 +8,8 @@ from nltk.stem import WordNetLemmatizer as wnl
 from nltk.tokenize import RegexpTokenizer
 from stemming.porter2 import stem
 from sklearn.feature_extraction.text import TfidfVectorizer
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+analyzer = SentimentIntensityAnalyzer()    
 import re
 import pickle
 import scipy.sparse as sps
@@ -44,18 +46,35 @@ class LemmaTokenizer(object):
 
 #If the user has inputs a query that has more 200 words in it. Use topic modeling
 print "Recovering files... "
+## All datasets and dictionary
+contractions_dict=read('contractions','json'); print 'contractions dictionary loaded...'
+stop_words=read('stop_words','p');print 'stop_words loaded'
+word_to_attitude=read('word_to_attitude','json'); print 'word_attitude loaded'
+author_feature_words=read('author_feature_words','json'); print 'feature words for authors loaded'
+topic_encoder=read('topic_encoder','p');print 'topic decoded loaded'
+author_to_index=read('author_to_index','json');print 'author_to_index loaded'
+index_to_author=read('index_to_author','json');print 'index_to_author loaded'
+topic_prediction_vectorizer=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
+topic_prediction_model=read('topic_prediction_model','p');print 'topic prediction model loaded'
+author_matrix_compressed = read('author_matrix_compressed','p'); print 'author matrix (after SVD) loaded'
+author_matrix = read('author_matrix','p'); print 'author matrix (before SVD) loaded'
+author_prediction_vectorizer=read('author_prediction_vectorizer','p');print 'author prediction vectorizer loaded'
+
+
+## Topic Model:
 cv=read('LDA_model','p'); print 'Vectorizer loaded'
 counts =read('LDA_trainingMatrix','p');print 'trainning_matrix loaded'
 counts=recover_Matrix(counts,0,counts.shape[0]); print 'training data loaded...'
 res= read('LDA_fittedMatrix','p'); print 'Fitted Topic Matrix loaded...'
+
+
+# Otherwise use biterm model
 vocab_to_index_bi=read('vocab_to_index_1','json'); print 'vocab_to_index for biterm loaded...'
 index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
-contractions_dict=read('contractions','json'); print 'contractions dictionary loaded...'
-# Otherwise use biterm model
 phiwz=read('phiwz','p');print 'word-topic distribution loaded'
 theta_z=read('thetaz','p');print 'topic distribution loaded'
-biterm_matrix=read('biterm_matrix1','p');print 'biterm_matrix loaded'
-stop_words=read('stop_words','p');print 'stop_words loaded'
+biterm_matrix=read('biterm_matrix_full','p');print 'biterm_matrix loaded'
+
         
         
 print "constructing tokenizer"
@@ -152,7 +171,7 @@ def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
   ##===================================================Predict Author============================================================
 
 ##Recommended authors, based on the query and the quote that the user clicks on
-def relevant_author (query,ID,matrix,vectorizer,numReturn=5,similarity_measure=entropy):
+def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction_vectorizer,numReturn=5,similarity_measure=entropy):
     longstring = query+' '+updated_newIDQuote[ID]
     new_vector = vectorizer.transform(longstring)[169:] 
     all_scores = []
@@ -163,7 +182,7 @@ def relevant_author (query,ID,matrix,vectorizer,numReturn=5,similarity_measure=e
     return results
 
 ## Similar authors, based entirely on the authors' textual features
-def similar_author (ID,matrix,numReturn=5,similarity_measure=entropy):
+def similar_author (ID,matrix=author_matrix_compressed,numReturn=5,similarity_measure=entropy):
     all_scores = []
     author=author_to_index[ID_to_author(ID)]
     for row in matrix:
@@ -186,7 +205,6 @@ def isEntity(word):
         return False 
     else:
         return True
-    
 #Takes in the query and quote, compare the sentiments of the query
 def sentimental_analysis(string):
     #Using Vader's sentiments to display the intensity score 
