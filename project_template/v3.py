@@ -10,9 +10,9 @@ from stemming.porter2 import stem
 from sklearn.feature_extraction.text import TfidfVectorizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 analyzer = SentimentIntensityAnalyzer()  
-import en_core_web_sm as en_core
+# import en_core_web_sm as en_core
 from scipy.sparse.linalg import svds
-nlp=en_core.load()
+# nlp=en_core.load()
 import re
 import pickle
 import scipy.sparse as sps
@@ -165,12 +165,13 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=
             result.append((ID_to_quote[indexes[index]],ID_to_author[indexes[index]],all_scores[index]))
             print "{}: {}\n\n".format(ID_to_quote[indexes[index]], all_scores[index])
         return result
-  ##=====================================================Rocchio Update==========================================================
-  ##Use Rocchio updating to update user query
-  #def irrelevant(docs, all_docs):
-  #  return set(all_docs)-set(docs)
+
+##=====================================================Rocchio Update==========================================================
+##Use Rocchio updating to update user query
+#def irrelevant(docs, all_docs):
+#  return set(all_docs)-set(docs)
   
-  def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
+def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
     # docs as list of IDs and query is the original query (in the form of a vector)
     # Now we treat each doc in docs as 'relevant' and all_docs-docs as irrelevant
     #other_docs=list(irrelevant(docs, all_docs))
@@ -179,7 +180,7 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=
     query_modified = alpha*query+beta*matrix[docs-1,:].sum(axis=0)/len(docs)#-theta*matrix[other_docs-1,:].sum(axis=0)/len(other_docs)
     return query_modified
   
-  ##===================================================Predict Author============================================================
+##===================================================Predict Author============================================================
 
 ##Recommended authors, based on the query and the quote that the user clicks on
 def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction_vectorizer,numReturn=5,similarity_measure=entropy):
@@ -210,12 +211,12 @@ def show_feature_words(author):
 def unstem(word):
     return unstem[words]
 ## Indicate whether a word is a name entity word or not
-def isEntity(word):
-    entities=nlp(word.title())
-    if entities.ents==():
-        return False 
-    else:
-        return True
+# def isEntity(word):
+#     entities=nlp(word.title())
+#     if entities.ents==():
+#         return False 
+#     else:
+#         return True
 #Takes in the query and quote, compare the sentiments of the query
 def sentimental_analysis(string):
     #Using Vader's sentiments to display the intensity score 

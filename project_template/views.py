@@ -23,6 +23,8 @@ def index(request):
             from .v1 import baseIR
         if version == 'v2':
             from .v2 import BTMRetrieval
+        if version == 'v3':
+            from .v3 import BTMRetrieval
 
         if request.GET.get('search'):
             search = request.GET.get('search')

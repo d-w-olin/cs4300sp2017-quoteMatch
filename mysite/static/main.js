@@ -38,7 +38,7 @@ $(".quote-content").on("click", function(){
                 if (data.extraction == "") {
                     $("#wiki-text").html("Information on " + author + " unavailable. Try checking <a target='_blank' href='" + data.pageurl + "'>this link</a> to learn more.");
                 } else {
-                    $("#wiki-text").html(data.extraction + "<span class='wiki-link'> Read more on <a href='" + data.pageurl + "' target='_blank'>Wikipedia</a></span>");
+                    $("#wiki-text").html(data.extraction + " <a class='wiki-link' href='" + data.pageurl + "' target='_blank'>Read more on Wikipedia</a>");
                     if (data.src == "") {
                         $("#wiki-img").addClass("no-img");
                     } else {
