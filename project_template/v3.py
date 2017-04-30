@@ -64,6 +64,8 @@ author_matrix_compressed = read('author_matrix_compressed','p'); print 'author m
 author_matrix = read('author_matrix','p'); print 'author matrix (before SVD) loaded'
 author_prediction_vectorizer=read('author_prediction_vectorizer','p');print 'author prediction vectorizer loaded'
 topic_list = read('all_topics_prediction','p'); print 'all topic loaded'
+ID_to_quote=read("ID_to_quote",'p');print 'ID_to_quote loaded'
+ID_to_author=read("ID_to_author",'p');print 'ID_to_author loaded'
 
 ## Topic Model:
 
