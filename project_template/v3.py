@@ -57,6 +57,7 @@ author_feature_words=read('author_feature_words','json'); print 'feature words f
 topic_encoder=read('topic_encoder','p');print 'topic decoded loaded'
 author_to_index=read('author_to_index','json');print 'author_to_index loaded'
 index_to_author=read('index_to_author','json');print 'index_to_author loaded'
+cv=read('LDA_model','p'); print 'Vectorizer loaded'
 topic_prediction_vectorizer=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
 topic_prediction_model=read('topic_prediction_model','p');print 'topic prediction model loaded'
 author_matrix_compressed = read('author_matrix_compressed','p'); print 'author matrix (after SVD) loaded'
@@ -65,7 +66,7 @@ author_prediction_vectorizer=read('author_prediction_vectorizer','p');print 'aut
 topic_list = read('all_topics_prediction','p'); print 'all topic loaded'
 
 ## Topic Model:
-cv=read('LDA_model','p'); print 'Vectorizer loaded'
+
 counts =read('LDA_trainingMatrix','p');print 'trainning_matrix loaded'
 counts=recover_Matrix(counts,0,counts.shape[0]); print 'training data loaded...'
 res= read('LDA_fittedMatrix','p'); print 'Fitted Topic Matrix loaded...'
@@ -205,7 +206,11 @@ def similar_author (ID,matrix=author_matrix_compressed,numReturn=5,similarity_me
 
 def show_feature_words(author):
     return author_feature_words[author]
-    
+##=================================================Predict Topic ==========================================
+def decode_topic(topicID):
+    return topic_ecoder.inverse_transform(topicID)
+
+
 ##=================================================Other Utility Functions=====================================================
 ## Unstem words,may be used to decode key features
 def unstem(word):
