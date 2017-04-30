@@ -122,12 +122,10 @@ def topic_given_biterm(z,biterm,theta_z,pWZ):
 
 def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     query_tokens = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
-    print(len(query_tokens))
     result=get_biterms(query_tokens,vocab_to_index_bi)
-    print (len(result))
     topic_doc=[]
     prior = biterm_prior(result)
-    for z in range(20):
+    for z in range(110):
         s=0
         for word in result:
             s+=topic_given_biterm(z,word,theta_z,phiwz)*prior[word]
@@ -161,7 +159,44 @@ def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     query_modified = alpha*query+beta*matrix[docs-1,:].sum(axis=0)/len(docs)#-theta*matrix[other_docs-1,:].sum(axis=0)/len(other_docs)
     return query_modified
   
-  
+  ##===================================================Predict Author============================================================
+
+##Recommended authors, based on the query and the quote that the user clicks on
+def relevant_author (query,ID,matrix,vectorizer,numReturn=5,similarity_measure=entropy):
+    longstring = query+' '+updated_newIDQuote[ID]
+    new_vector = vectorizer.transform(longstring)[169:] 
+    all_scores = []
+    for row in matrix:
+        all_scores.append(similarity_measure(np.asarray(row).reshape(-1),np.asarray(new_vector)))
+    
+    results=np.asarray(all_scores).argsort()[0:numReturn]
+    return results
+
+## Similar authors, based entirely on the authors' textual features
+def similar_author (ID,matrix,numReturn=5,similarity_measure=entropy):
+    all_scores = []
+    author=author_to_index[ID_to_author(ID)]
+    for row in matrix:
+        all_scores.append(similarity_measure(np.asarray(row).reshape(-1),np.asarray(matrix[author,:])))
+    
+    results=np.asarray(all_scores).argsort()[1:numReturn+1]
+    return results
+
+def show_feature_words(author):
+    return author_feature_words[author]
+    
+##=================================================Other Utility Functions=====================================================
+## Unstem words,may be used to decode key features
+def unstem(word):
+    return unstem[words]
+## Indicate whether a word is a name entity word or not
+def isEntity(word):
+    entities=nlp(word.title())
+    if entities.ents==():
+        return False 
+    else:
+        return True
+    
 
 
 
