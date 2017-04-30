@@ -204,7 +204,11 @@ def similar_author (ID,matrix=author_matrix_compressed,numReturn=5,similarity_me
 
 def show_feature_words(author):
     return author_feature_words[author]
-    
+##=================================================Predict Topic ==========================================
+def decode_topic(topicID):
+    return topic_ecoder.inverse_transform(topicID)
+
+
 ##=================================================Other Utility Functions=====================================================
 ## Unstem words,may be used to decode key features
 def unstem(word):
