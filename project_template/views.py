@@ -33,6 +33,8 @@ def index(request):
                 output_list = baseIR(search)
             if version == 'v2':
                 output_list = BTMRetrieval(search, 100)
+            if version == 'v3':
+                output_list = BTMRetrieval(search, 100)
 
             paginator = Paginator(output_list, 15)
             page = request.GET.get('page')

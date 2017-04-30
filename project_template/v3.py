@@ -184,7 +184,7 @@ def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
 ##===================================================Predict Author============================================================
 
 ##Recommended authors, based on the query and the quote that the user clicks on
-def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction,numReturn=5,similarity_measure=entropy):
+def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction_vectorizer,numReturn=5,similarity_measure=entropy):
     longstring = query+' '+updated_newIDQuote[ID]
     new_vector = vectorizer.transform(longstring)[169:] 
     all_scores = []
