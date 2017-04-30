@@ -11,100 +11,158 @@
         </div>
 
         <div class="container">
-
-            <div class="left">
-                {% if output %}
-                    <div class="wikipedia">
-                        <p id="wiki-title" class="title"></p>
-                        <p id="wiki-text">Click on a quote to learn more about its author</p>
-                    </div>
-                {% endif %}
-
-                <form class="form-group" method="GET">
-                    <p class="title">Enter Query Here</p>
-                    <div class="form-group">
-                        <input type="hidden" name="version" value="v2">
-                        <textarea id="input" type="text" name="search" class="form-control" placeholder="Your Input" rows="15">{% if input %}{{input}}{% endif %}</textarea>
-                    </div>
-                    <button type="submit" class="btn btn-info">GO</button>
-                </form>
-            </div>
-
-            <div class="right form-inline global-search">
-                <div class="results-title">
-                    <p class="title">Results</p>
-                    <p class="title">
-                        <a onclick="showHiddenContent()">I want to improve my results!</a>
-                    </p>
-                </div>
-                <div class="hidden hidden-content">
-                    <p>Select the top quotes from the first 15 results, and we'll improve your query's results!</p>
-                    <button type="submit" class="btn btn-info" onclick="rocchio()">RECALCULATE</button>
-                </div>
-
-                {% if output %}
-                     <!-- need to change output so that it also includes quote id so value can be quote id -->
-                    {% for quote, author, score in output %}
-                        <div class="quote">
-                            <div class="quote-content">
-                                <p>{{quote}}</p>
-                                <p class="author">by {{author}}</p>
-                            </div>
-                            <input class="hidden hidden-content" type="checkbox" name="rocchio" value="{{quote}}">
+            {% if output %}
+                <div id="wikipedia">
+                    <img id="loading" alt="http://loading.io/loader/?use=eyJzaXplIjo2MCwic3BlZWQiOjEsImNiayI6IiNmZmZmZmYiLCJjMSI6IiM1NTU1NTUiLCJjMiI6IjEyIiwiYzMiOiI3IiwiYzQiOiIyMCIsImM1IjoiNSIsImM2IjoiMzAiLCJ0eXBlIjoiZGVmYXVsdCJ9" src="/static/loading.gif">
+                    <p id="wiki-title" class="title"></p>
+                    <div class="wiki-content">
+                        <div id="wiki-img"></div>
+                        <div class="wiki-content-text">
+                            <p id="wiki-text">Click on a quote to learn more about its author</p>
+                            <p id="wiki-authors"></p>
+                            <p id="wiki-topics"></p>
                         </div>
-                    {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
 
-                    <div class="pagination">
-                        <span class="step-links">
-                            {% if output.has_previous %}
-                            <a href= "{{magic_url}}&page={{ output.previous_page_number }}">previous</a>
-                            {% endif %}
-                            
-                            <!-- Showing the page numbers in Html Page -->
-                            <span class="current">
-                            Page {{ output.number }} of {{ output.paginator.num_pages }}
-                            </span>
-                            
-                            {% if output.has_next %}
-                            <a href= "{{magic_url}}&page={{ output.next_page_number }}">next</a>
-                            {% endif %}
-                        </span>
+            <div class="content">
+                <div class="left">
+                    <form class="form-group" method="GET">
+                        <p class="title">Enter Query Here</p>
+                        <div class="form-group">
+                            <input type="hidden" name="version" value="v2">
+                            <textarea id="input" type="text" name="search" class="form-control" placeholder="Your Input" rows="15">{% if input %}{{input}}{% endif %}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-info">GO</button>
+                    </form>
+                </div>
+
+                <div class="right form-inline global-search">
+                    <div class="results-title">
+                        <p class="title">Results</p>
+                        <p class="title">
+                            <a onclick="showHiddenContent()">I want to improve my results!</a>
+                        </p>
+                    </div>
+                    <div class="hidden hidden-content">
+                        <p>Select the top quotes from the first 15 results, and we'll improve your query's results!</p>
+                        <button type="submit" class="btn btn-info">RECALCULATE</button>
                     </div>
 
-                {% else %}
+                    {% if output %}
+                         <!-- need to change output so that it also includes quote id so value can be quote id -->
+                        {% for quote, author, score in output %}
+                            <div class="quote">
+                                <div class="quote-content">
+                                    <p>{{quote}}</p>
+                                    <p class="author">by {{author}}</p>
+                                </div>
+                                <input class="hidden hidden-content" type="checkbox" name="rocchio" value="{{quote}}">
+                            </div>
+                        {% endfor %}
 
-                    <p>Results will appear here on valid input</p>
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if output.has_previous %}
+                                <a href= "{{magic_url}}&page={{ output.previous_page_number }}">previous</a>
+                                {% endif %}
+                                
+                                <!-- Showing the page numbers in Html Page -->
+                                <span class="current">
+                                Page {{ output.number }} of {{ output.paginator.num_pages }}
+                                </span>
+                                
+                                {% if output.has_next %}
+                                <a href= "{{magic_url}}&page={{ output.next_page_number }}">next</a>
+                                {% endif %}
+                            </span>
+                        </div>
 
-                {% endif %}
+                    {% else %}
+
+                        <p>Results will appear here on valid input</p>
+
+                    {% endif %}
+                </div>
             </div>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
         <script>
             $(".quote-content").on("click", function(){
-                if ($(".active").length > 0) {
-                    $(".active")[0].classList.remove("active");
-                }
-                this.classList.add("active");
-
-                var author = $(".active .author")[0].innerHTML.substr(3);
-                console.log("learning more about " + author);
-                $.ajax({
-                    url: "getWiki",
-                    data: {
-                        "author": author
-                    },
-                    dataType: "json",
-                    success: function(data) {
-                        if (data.extraction == "") {
-                            $("#wiki-title").html("");
-                            $("#wiki-text").html("Information on " + author + " unavailable. Try checking <a target='_blank' href='" + data.pageurl + "'>this link</a> to learn more.");
-                        } else {
-                            $("#wiki-title").html("From <a href='" + data.pageurl + "' target='_blank'>Wikipedia</a>...");
-                            $("#wiki-text").html(data.extraction);
-                        }
-                        $("html, body").animate({ scrollTop: 0 }, "slow");
+                if (this.classList.contains('active')) {
+                    this.classList.remove('active');
+                    $("#wikipedia").slideToggle();
+                } else {
+                    if ($(".active").length > 0) {
+                        $(".active")[0].classList.remove("active");
                     }
-                });  
+                    this.classList.add("active");
+
+                    var author = $(".active .author")[0].innerHTML.substr(3);
+                    console.log("learning more about " + author);
+                    $.ajax({
+                        url: "getWiki",
+                        data: {
+                            "author": author
+                        },
+                        dataType: "json",
+                        beforeSend: function() {
+                            $("html, body").animate({ scrollTop: 0 }, "slow");
+                            $("#wiki-title").html("");
+                            $("#wiki-text").html("");
+                            $("#wiki-img").html("");
+                            $("#wiki-img").removeClass("no-img");
+                            $("#wiki-authors").html("");
+                            $("#wiki-topics").html("");
+                            $("#wikipedia").css("display", "flex");
+                            $("#loading").show();
+                        },
+                        success: function(data) {
+                            $("#wikipedia").css("display", "none");
+                            if (data.extraction == "") {
+                                $("#wiki-text").html("Information on " + author + " unavailable. Try checking <a target='_blank' href='" + data.pageurl + "'>this link</a> to learn more.");
+                            } else {
+                                $("#wiki-title").html("From <a href='" + data.pageurl + "' target='_blank'>Wikipedia</a>...");
+                                $("#wiki-text").html(data.extraction);
+                                if (data.src == "") {
+                                    $("#wiki-img").addClass("no-img");
+                                } else {
+                                    $("#wiki-img").html("<img src='" + data.src + "' alt='" + author + "'>");   
+                                }
+                            }
+                            if (data.authors.length != 0) {
+                                var similar_authors = "<span class='title'>Similar authors: </span>";
+                                data.authors.forEach(function(d, i) {
+                                    if (i != data.authors.length - 1) {
+                                        similar_authors += d + " &middot; "
+                                    } else {
+                                        similar_authors += d
+                                    }
+                                });
+                                $("#wiki-authors").html(similar_authors);
+                            }
+                            if (data.topics.length != 0) {
+                                var similar_topics = "<span class='title'>Similar topics: </span>";
+                                data.topics.forEach(function(d, i) {
+                                    if (i != data.topics.length - 1) {
+                                        similar_topics += d + " &middot; "
+                                    } else {
+                                        similar_topics += d
+                                    }
+                                });
+                                $("#wiki-authors").html(similar_topics);
+                            }
+                        },
+                        error: function() {
+                            $("#wiki-text").html("Sorry, something went wrong. Try again later.")
+                        },
+                        complete: function() {
+                            $("#loading").hide();
+                            $("#wikipedia").slideToggle();
+                        }
+                    });  
+                }
             });
 
             function showHiddenContent() {
@@ -120,25 +178,25 @@
                 });
             }
 
-            function rocchio() {
-                relevant = []
-                $("input[name='rocchio']").each(function(i, d) {
-                    if (d.checked) {
-                        relevant.push(d.value);
-                    }
-                })
+            // function rocchio() {
+            //     relevant = []
+            //     $("input[name='rocchio']").each(function(i, d) {
+            //         if (d.checked) {
+            //             relevant.push(d.value);
+            //         }
+            //     })
 
-                $.ajax({
-                    url: "rocchio",
-                    data: {
-                        "relevant": relevant
-                    },
-                    dataType: "json",
-                    success: function(data) {
-                        console.log("'success'");
-                    }
-                });
-            }
+            //     $.ajax({
+            //         url: "rocchio",
+            //         data: {
+            //             "relevant": relevant
+            //         },
+            //         dataType: "json",
+            //         success: function(data) {
+            //             console.log("'success'");
+            //         }
+            //     });
+            // }
         </script>
     </body>
 </html>

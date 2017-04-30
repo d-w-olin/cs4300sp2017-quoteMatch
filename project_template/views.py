@@ -6,8 +6,9 @@ from django.template import loader
 from .form import QueryForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
-import urllib, json
+import urllib
 import wikipedia
+from bs4 import BeautifulSoup
 
 # Create your views here.
 def index(request):
@@ -46,26 +47,16 @@ def index(request):
                            'magic_url': request.get_full_path(),
                            })
 
+def getImgSrc(page):
+  soup = BeautifulSoup(page.html())
+  table = soup.find('table', class_='infobox')
+  try:
+    return table.find_all('img')[0].get('src')
+  except Exception as e:
+    print e
+    return 
+
 def getWiki(request):
-    """
-    returns page url and text excerpt
-    """
-    author = request.GET.get('author', None)
-    url = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&redirects=1&titles=' + urllib.quote(author)
-    try:
-        response = urllib.urlopen(url)
-        data = json.loads(response.read())
-        pageid = data['query']['pages'].keys()[0]
-        pageurl = 'https://en.wikipedia.org/?curid=' + pageid
-        extraction = data['query']['pages'][pageid]['extract']
-    except Exception as e:
-        pageurl = 'https://en.wikipedia.org/wiki/Special:Search?search=' + urllib.quote_plus(author) + '&go=Go'
-        extraction = ''
-    finally:
-        return JsonResponse({'pageurl': pageurl, 'extraction': extraction})
-
-
-def newGetWiki(request):
     author = request.GET.get('author', None)
     try:
         page = wikipedia.page(author)
@@ -74,10 +65,25 @@ def newGetWiki(request):
 
     except Exception as e:
         pageurl = 'https://en.wikipedia.org/wiki/Special:Search?search=' + urllib.quote_plus(author) + '&go=Go'
-        extraction = "No information found for "+author+" on Wikipedia."
+        extraction = 'No information found for '+author+' on Wikipedia.'
 
     finally:
-        return JsonResponse({'pageurl': pageurl, 'extraction': extraction})
+        topics = []
+        authors = ['author 1', 'author 2', 'author 3']
+        try:
+            src = getImgSrc(page)
+            print 'src is {}!'.format(src)
+            assert src != None
+        except Exception as e:
+            print e
+            src = ''
+
+        return JsonResponse({'pageurl': pageurl, 
+            'extraction': extraction, 
+            'src': src,
+            'topics': topics,
+            'authors': authors
+            })
 
 
 

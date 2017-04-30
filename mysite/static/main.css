@@ -9,30 +9,34 @@ body {
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
     font-size: 14px;
     margin: 0 auto;
 }
 
-.container > * {
+.content {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+}
+
+.content > * {
     margin: 15px;
 }
 
 @media (min-width: 1200px) {
-    .container {
+    .content {
         max-width: 1000px;
         width: 100%;
     }
 }
 
 @media (min-width: 800px) {
-    .container {
+    .content {
         flex-direction: row;
         justify-content: space-around;
     }
 
-    .container > * {
+    .content > * {
         margin: 0 30px;
         width: 100%;
     }
@@ -92,15 +96,55 @@ body {
 }
 
 /* WIKIPEDIA STYLE */
-.wikipedia {
+#wikipedia {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-height: 200px;
+    margin: 0 15px 50px;
+    max-width: 1000px;
+    width: auto;
+}
+
+@media (min-width: 1000px) {
+    #wikipedia {
+        margin: 0 auto 50px;
+    }
+}
+
+.wiki-content {
+    display: flex;
+}
+
+#loading {
+    display: none;
+    height: 50px;
+    margin: 0 auto;
+    width: 50px;
 }
 
 #wiki-title {
     margin: 5px 0;
+}
+
+.wiki-content-text {
+    margin: 15px;
+}
+
+#wiki-img.no-img {
+    border: 5px solid #f2f1f1;
+    display: block;
+    height: 90px;
+    padding: 35px;
+}
+
+#wiki-img.no-img::after {
+    align-items: center;
+    color: #a6a6a6;
+    content: 'no image available';
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    text-align: center;
 }
 
 /* FORM STYLE */
