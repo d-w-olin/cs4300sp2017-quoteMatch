@@ -211,11 +211,11 @@ def show_feature_words(author):
     return author_feature_words[author]
 ##=================================================Predict Topic ==========================================
 def decode_topic(topicID):
-    return topic_ecoder.inverse_transform(topicID)
+    return topic_encoder.inverse_transform(topicID)
 
 def related_topics(query, quoteID, topic_predictor ):
     new_vec = tfidf_vec.transform([query + ID_to_quote[quoteID]])
-    topics = le_topic.inverse_transform(np.argsort(ovr.decision_function(new_vec).ravel())[::-1][:8]).tolist()
+    topics = topic_encoder.inverse_transform(np.argsort(ovr.decision_function(new_vec).ravel())[::-1][:8]).tolist()
     return topics
 ##=================================================Other Utility Functions=====================================================
 ## Unstem words,may be used to decode key features
