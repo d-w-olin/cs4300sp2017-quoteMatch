@@ -68,7 +68,7 @@ def getWiki(request):
         extraction = 'No information found for '+author+' on Wikipedia.'
 
     finally:
-        topics = []
+        topics = ['topic 1']
         authors = ['author 1', 'author 2', 'author 3']
         try:
             src = getImgSrc(page)
@@ -84,22 +84,3 @@ def getWiki(request):
             'topics': topics,
             'authors': authors
             })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
