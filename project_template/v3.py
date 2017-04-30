@@ -56,16 +56,6 @@ phiwz=read('phiwz','p');print 'word-topic distribution loaded'
 theta_z=read('thetaz','p');print 'topic distribution loaded'
 biterm_matrix=read('biterm_matrix1','p');print 'biterm_matrix loaded'
 stop_words=read('stop_words','p');print 'stop_words loaded'
-
-print "constructing index"
-#Construct Index 
-ID_to_author=defaultdict(str)
-ID_to_quote=defaultdict(str)
-with open('quotes.csv','rb') as f:
-    reader=csv.reader(f)
-    for row in reader:
-        ID_to_quote[int(row[0])]=row[2]
-        ID_to_author[int(row[0])]=row[1]
         
         
 print "constructing tokenizer"
@@ -90,7 +80,7 @@ def TMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     top20=np.asarray(all_scores).argsort()[reverse*rank:]
     result = []
     for index in top20:
-        result.append((ID_to_quote[index+1],ID_to_author[index+1],all_scores[index]))
+        result.append((ID_to_quote[index],ID_to_author[index+1],all_scores[index]))
     return result
 
 #===================================================Biterm Model=====================================
@@ -122,12 +112,10 @@ def topic_given_biterm(z,biterm,theta_z,pWZ):
 
 def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     query_tokens = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
-    print(len(query_tokens))
     result=get_biterms(query_tokens,vocab_to_index_bi)
-    print (len(result))
     topic_doc=[]
     prior = biterm_prior(result)
-    for z in range(20):
+    for z in range(110):
         s=0
         for word in result:
             s+=topic_given_biterm(z,word,theta_z,phiwz)*prior[word]
@@ -143,8 +131,8 @@ def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     top20=np.asarray(all_scores).argsort()[0:rank]
     result = []
     for index in top20:
-        result.append((ID_to_quote[index+1],ID_to_author[index+1],all_scores[index]))
-        print "{}: {}\n\n".format(ID_to_quote[index+1], all_scores[index])
+        result.append((ID_to_quote[index],ID_to_author[index],all_scores[index]))
+        print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
     return result
 
   ##=====================================================Rocchio Update==========================================================
@@ -161,7 +149,53 @@ def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     query_modified = alpha*query+beta*matrix[docs-1,:].sum(axis=0)/len(docs)#-theta*matrix[other_docs-1,:].sum(axis=0)/len(other_docs)
     return query_modified
   
-  
+  ##===================================================Predict Author============================================================
 
+##Recommended authors, based on the query and the quote that the user clicks on
+def relevant_author (query,ID,matrix,vectorizer,numReturn=5,similarity_measure=entropy):
+    longstring = query+' '+updated_newIDQuote[ID]
+    new_vector = vectorizer.transform(longstring)[169:] 
+    all_scores = []
+    for row in matrix:
+        all_scores.append(similarity_measure(np.asarray(row).reshape(-1),np.asarray(new_vector)))
+    
+    results=np.asarray(all_scores).argsort()[0:numReturn]
+    return results
 
+## Similar authors, based entirely on the authors' textual features
+def similar_author (ID,matrix,numReturn=5,similarity_measure=entropy):
+    all_scores = []
+    author=author_to_index[ID_to_author(ID)]
+    for row in matrix:
+        all_scores.append(similarity_measure(np.asarray(row).reshape(-1),np.asarray(matrix[author,:])))
+    
+    results=np.asarray(all_scores).argsort()[1:numReturn+1]
+    return results
+
+def show_feature_words(author):
+    return author_feature_words[author]
+    
+##=================================================Other Utility Functions=====================================================
+## Unstem words,may be used to decode key features
+def unstem(word):
+    return unstem[words]
+## Indicate whether a word is a name entity word or not
+def isEntity(word):
+    entities=nlp(word.title())
+    if entities.ents==():
+        return False 
+    else:
+        return True
+    
+#Takes in the query and quote, compare the sentiments of the query
+def sentimental_analysis(string):
+    #Using Vader's sentiments to display the intensity score 
+    intensity_score=analyzer.polarity_scores(string)
+    #Use the ANEW system to determine various sentimental domain
+    words = [stem(t) for t in regtokenizer.tokenize(expand_contractions(string.lower()))]
+    anew_score = np.zeros((1,3))
+    for word in words:
+        if stem(word) in word_to_attitude.keys():
+            anew_score+=np.array(word_to_attitude[stem(word)])
+    return (intensity_score,anew_score)
 
