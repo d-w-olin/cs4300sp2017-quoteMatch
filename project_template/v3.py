@@ -58,8 +58,8 @@ topic_encoder=read('topic_encoder','p');print 'topic decoded loaded'
 author_to_index=read('author_to_index','json');print 'author_to_index loaded'
 index_to_author=read('index_to_author','json');print 'index_to_author loaded'
 cv=read('LDA_model','p'); print 'Vectorizer loaded'
-topic_prediction=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
-topic_prediction_model=read('topic_prediction_model','p');print 'topic prediction model loaded'
+# topic_prediction=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
+# topic_prediction_model=read('topic_prediction_model','p');print 'topic prediction model loaded'
 author_matrix_compressed = read('author_matrix_compressed','p'); print 'author matrix (after SVD) loaded'
 author_matrix = read('author_matrix','p'); print 'author matrix (before SVD) loaded'
 author_prediction_vectorizer=read('author_prediction_vectorizer','p');print 'author prediction vectorizer loaded'
@@ -158,13 +158,13 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=
     result = []
     if filter_by ==False:
         for index in top20:
-            result.append((ID_to_quote[index],ID_to_author[index],all_scores[index]))
-            print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
+            result.append((ID_to_quote[index],ID_to_author[index],index))
+            # print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
         return result
     else:
         for index in top20:
-            result.append((ID_to_quote[indexes[index]],ID_to_author[indexes[index]],all_scores[index]))
-            print "{}: {}\n\n".format(ID_to_quote[indexes[index]], all_scores[index])
+            result.append((ID_to_quote[indexes[index]],ID_to_author[indexes[index]],indexes[index]))
+            # print "{}: {}\n\n".format(ID_to_quote[indexes[index]], all_scores[index])
         return result
 
 ##=====================================================Rocchio Update==========================================================

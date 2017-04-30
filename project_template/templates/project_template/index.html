@@ -54,14 +54,13 @@
                     
 
                     {% if output %}
-                         <!-- need to change output so that it also includes quote id so value can be quote id -->
-                        {% for quote, author, score in output %}
+                        {% for quote, author, id in output %}
                             <div class="quote">
                                 <div class="quote-content">
                                     <p>{{quote}}</p>
                                     <p class="author">by {{author}}</p>
                                 </div>
-                                <input class="hidden hidden-content" type="checkbox" name="rocchio" value="{{quote}}">
+                                <input class="hidden hidden-content" type="checkbox" name="rocchio" value="{{id}}">
                             </div>
                         {% endfor %}
 
