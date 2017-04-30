@@ -66,6 +66,7 @@ author_prediction_vectorizer=read('author_prediction_vectorizer','p');print 'aut
 topic_list = read('all_topics_prediction','p'); print 'all topic loaded'
 ID_to_quote=read("ID_to_quote",'p');print 'ID_to_quote loaded'
 ID_to_author=read("ID_to_author",'p');print 'ID_to_author loaded'
+topic_predictor=read("topic_predictor",'p'); print 'topic_predictor loaded'
 
 ## Topic Model:
 
@@ -212,7 +213,10 @@ def show_feature_words(author):
 def decode_topic(topicID):
     return topic_ecoder.inverse_transform(topicID)
 
-
+def related_topics(query, quoteID, topic_predictor ):
+    new_vec = tfidf_vec.transform([query + ID_to_quote[quoteID]])
+    topics = le_topic.inverse_transform(np.argsort(ovr.decision_function(new_vec).ravel())[::-1][:8]).tolist()
+    return topics
 ##=================================================Other Utility Functions=====================================================
 ## Unstem words,may be used to decode key features
 def unstem(word):
