@@ -197,6 +197,15 @@ def isEntity(word):
     else:
         return True
     
-
-
+#Takes in the query and quote, compare the sentiments of the query
+def sentimental_analysis(string):
+    #Using Vader's sentiments to display the intensity score 
+    intensity_score=analyzer.polarity_scores(string)
+    #Use the ANEW system to determine various sentimental domain
+    words = [stem(t) for t in regtokenizer.tokenize(expand_contractions(string.lower()))]
+    anew_score = np.zeros((1,3))
+    for word in words:
+        if stem(word) in word_to_attitude.keys():
+            anew_score+=np.array(word_to_attitude[stem(word)])
+    return (intensity_score,anew_score)
 
