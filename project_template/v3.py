@@ -58,7 +58,7 @@ topic_encoder=read('topic_encoder','p');print 'topic decoded loaded'
 author_to_index=read('author_to_index','json');print 'author_to_index loaded'
 index_to_author=read('index_to_author','json');print 'index_to_author loaded'
 cv=read('LDA_model','p'); print 'Vectorizer loaded'
-topic_prediction_vectorizer=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
+topic_prediction=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
 topic_prediction_model=read('topic_prediction_model','p');print 'topic prediction model loaded'
 author_matrix_compressed = read('author_matrix_compressed','p'); print 'author matrix (after SVD) loaded'
 author_matrix = read('author_matrix','p'); print 'author matrix (before SVD) loaded'
@@ -184,7 +184,7 @@ def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
 ##===================================================Predict Author============================================================
 
 ##Recommended authors, based on the query and the quote that the user clicks on
-def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction_vectorizer,numReturn=5,similarity_measure=entropy):
+def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction,numReturn=5,similarity_measure=entropy):
     longstring = query+' '+updated_newIDQuote[ID]
     new_vector = vectorizer.transform(longstring)[169:] 
     all_scores = []
