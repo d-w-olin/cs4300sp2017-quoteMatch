@@ -9,7 +9,10 @@ from nltk.tokenize import RegexpTokenizer
 from stemming.porter2 import stem
 from sklearn.feature_extraction.text import TfidfVectorizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-analyzer = SentimentIntensityAnalyzer()    
+analyzer = SentimentIntensityAnalyzer()  
+import en_core_web_sm as en_core
+from scipy.sparse.linalg import svds
+nlp=en_core.load()
 import re
 import pickle
 import scipy.sparse as sps
