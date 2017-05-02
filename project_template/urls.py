@@ -6,5 +6,5 @@ app_name = 'pt'
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^getWiki/$', views.getWiki, name='getWiki'),
-    url(r'^wikiShowMore/$', views.wikiShowMore, name='wikiShowMore')
+    url(r'^wikiShowMore/$', views.wikiShowMore, name='wikiShowMore'),
 ]
