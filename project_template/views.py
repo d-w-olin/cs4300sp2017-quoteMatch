@@ -9,7 +9,7 @@ from django.http import JsonResponse
 import urllib
 import wikipedia
 from bs4 import BeautifulSoup
-from .v3 import relevant_author
+from .v3 import relevant_author, related_topics
 
 # Create your views here.
 def index(request):
@@ -45,7 +45,6 @@ def index(request):
                 else:
                     print topics
                     output_list = retrieval3(search, 100, filter_by=topics)
-                    print "first: {}".format(output_list[0])
 
             paginator = Paginator(output_list, 15)
             page = request.GET.get('page')
@@ -94,10 +93,15 @@ def getWiki(request):
 
         try:
             authors = relevant_author(search,qID)
-            topics = []
         except Exception as e:
             print e
             authors = []
+
+        try:
+            topics = related_topics(search, qID)
+            print topics
+        except Exception as e:
+            print e
             topics = []
 
         return JsonResponse({'pageurl': pageurl, 
