@@ -33,7 +33,7 @@ function authorInfo(input) {
     query = input;
 }
 
-$("#wiki-showmore-btn").on("click", function(){
+function wikiShowMore() {
     $.ajax({
         url: "wikiShowMore",
         data: {
@@ -73,7 +73,7 @@ $("#wiki-showmore-btn").on("click", function(){
             $("#loading-small").css("display", "none")
         }
     })
-});
+}
 
 $(".quote-content").on("click", function(){
     currentQuote = this;
@@ -107,7 +107,6 @@ $(".quote-content").on("click", function(){
                 $("#wiki-authors").html("");
                 $("#wiki-topics").html("");
                 $("#wikipedia").css("display", "flex");
-                $("#wiki-showmore-btn").css("display", "none");
                 $("#loading").show();
             },
             success: function(data) {
@@ -131,7 +130,7 @@ $(".quote-content").on("click", function(){
             complete: function() {
                 $("#loading").hide();
                 $("#wikipedia").slideToggle();
-                $("#wiki-showmore-btn").css("display", "block");
+                wikiShowMore();
             }
         });  
     }

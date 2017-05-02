@@ -20,7 +20,6 @@
                         <div id="wiki-img"></div>
                         <div class="wiki-content-text">
                             <p id="wiki-text"></p>
-                            <button id="wiki-showmore-btn" class="btn btn-info" onclick="authorInfo('{{input}}')">Show Recommendation</button>
                             <div id="wiki-showmore">
                                 <img id="loading-small" alt="http://loading.io/loader/?use=eyJzaXplIjo2MCwic3BlZWQiOjEsImNiayI6IiNmZmZmZmYiLCJjMSI6IiM1NTU1NTUiLCJjMiI6IjEyIiwiYzMiOiI3IiwiYzQiOiIyMCIsImM1IjoiNSIsImM2IjoiMzAiLCJ0eXBlIjoiZGVmYXVsdCJ9" src="/static/loading.gif">
                                 <p id="wiki-authors"></p>
@@ -182,7 +181,7 @@
                     {% if output %}
                         {% for quote, author, id in output %}
                             <div class="quote">
-                                <div class="quote-content" data-track="{{id}}">
+                                <div class="quote-content" data-track="{{id}}" onclick='authorInfo("{{input}}");'>
                                     <p>{{quote}}</p>
                                     <p class="author">by {{author}}</p>
                                 </div>
