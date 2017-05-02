@@ -27,14 +27,56 @@ $("#input").on('keyup', function() {
     }
 });
 
-var query = ''
+var query = '', currentQuote = ''
 
 function authorInfo(input) {
     query = input;
 }
 
+$("#wiki-showmore-btn").on("click", function(){
+    $.ajax({
+        url: "wikiShowMore",
+        data: {
+            "query": query,
+            "author": $(".active .author")[0].innerHTML.substr(3),
+            "qID": currentQuote.attributes["data-track"].value
+        },
+        dataType: "json",
+        beforeSend: function() {
+            $("#loading-small").css("display", "block");
+        },
+        success: function(data) {
+            if (data.authors.length != 0) {
+                var similar_authors = "<span class='title'>Recommended authors: </span>";
+                data.authors.forEach(function(d, i) {
+                    if (i != data.authors.length - 1) {
+                        similar_authors += d + " &middot; "
+                    } else {
+                        similar_authors += d
+                    }
+                });
+                $("#wiki-authors").html(similar_authors);
+            }
+            if (data.topics.length != 0) {
+                var similar_topics = "<span class='title'>Similar topics: </span>";
+                data.topics.forEach(function(d, i) {
+                    if (i != data.topics.length - 1) {
+                        similar_topics += d + " &middot; "
+                    } else {
+                        similar_topics += d
+                    }
+                });
+                $("#wiki-topics").html(similar_topics);
+            }
+        },
+        complete: function() {
+            $("#loading-small").css("display", "none")
+        }
+    })
+});
+
 $(".quote-content").on("click", function(){
-    var currentQuote = this;
+    currentQuote = this;
     console.log(currentQuote);
 
     if (currentQuote.classList.contains('active')) {
@@ -51,7 +93,6 @@ $(".quote-content").on("click", function(){
         $.ajax({
             url: "getWiki",
             data: {
-                "query": query,
                 "author": author,
                 "qID": currentQuote.attributes["data-track"].value
             },
@@ -66,6 +107,7 @@ $(".quote-content").on("click", function(){
                 $("#wiki-authors").html("");
                 $("#wiki-topics").html("");
                 $("#wikipedia").css("display", "flex");
+                $("#wiki-showmore-btn").css("display", "none");
                 $("#loading").show();
             },
             success: function(data) {
@@ -82,28 +124,6 @@ $(".quote-content").on("click", function(){
                         $("#wiki-img").html("<img src='" + data.src + "' alt='" + author + "'>");   
                     }
                 }
-                if (data.authors.length != 0) {
-                    var similar_authors = "<span class='title'>Recommended authors: </span>";
-                    data.authors.forEach(function(d, i) {
-                        if (i != data.authors.length - 1) {
-                            similar_authors += d + " &middot; "
-                        } else {
-                            similar_authors += d
-                        }
-                    });
-                    $("#wiki-authors").html(similar_authors);
-                }
-                if (data.topics.length != 0) {
-                    var similar_topics = "<span class='title'>Similar topics: </span>";
-                    data.topics.forEach(function(d, i) {
-                        if (i != data.topics.length - 1) {
-                            similar_topics += d + " &middot; "
-                        } else {
-                            similar_topics += d
-                        }
-                    });
-                    $("#wiki-topics").html(similar_topics);
-                }
             },
             error: function() {
                 $("#wiki-text").html("Sorry, something went wrong. Try again later.")
@@ -111,6 +131,7 @@ $(".quote-content").on("click", function(){
             complete: function() {
                 $("#loading").hide();
                 $("#wikipedia").slideToggle();
+                $("#wiki-showmore-btn").css("display", "block");
             }
         });  
     }

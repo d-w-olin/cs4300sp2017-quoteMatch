@@ -71,9 +71,7 @@ def getImgSrc(page):
     return 
 
 def getWiki(request):
-    search = request.GET.get('query', None)
     author = request.GET.get('author', None)
-    qID = int(request.GET.get('qID', None))
     try:
         page = wikipedia.page(author)
         pageurl = page.url
@@ -91,22 +89,28 @@ def getWiki(request):
         except Exception as e:
             src = ''
 
-        try:
-            authors = relevant_author(search,qID)
-        except Exception as e:
-            print e
-            authors = []
-
-        try:
-            topics = related_topics(search, qID)
-            print topics
-        except Exception as e:
-            print e
-            topics = []
-
         return JsonResponse({'pageurl': pageurl, 
             'extraction': extraction, 
-            'src': src,
-            'topics': topics,
-            'authors': authors
+            'src': src
             })
+
+def wikiShowMore(request):
+    search = request.GET.get('query', None)
+    author = request.GET.get('author', None)
+    qID = int(request.GET.get('qID', None))
+
+    try:
+        authors = relevant_author(search,qID)
+    except Exception as e:
+        print e
+        authors = []
+
+    try:
+        topics = related_topics(search, qID)
+        print topics
+    except Exception as e:
+        print e
+        topics = []
+
+    return JsonResponse({'topics': topics,
+            'authors': authors})

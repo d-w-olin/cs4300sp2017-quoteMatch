@@ -20,5 +20,6 @@ urlpatterns = [
 	url(r'^pt/', include('project_template.urls')),
 	url(r'^$', include('project_template.urls')),
     url(r'^getWiki/', include('project_template.urls')),
+    url(r'^wikiShowMore/', include('project_template.urls')),
     url(r'^admin/', admin.site.urls),
 ]
