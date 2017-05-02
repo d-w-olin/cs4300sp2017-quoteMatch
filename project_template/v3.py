@@ -58,7 +58,7 @@ author_feature_words=read('author_feature_words','json'); print 'feature words f
 topic_encoder=read('topic_encoder','p');print 'topic decoded loaded'
 author_to_index=read('author_to_index','json');print 'author_to_index loaded'
 index_to_author=read('index_to_author','json');print 'index_to_author loaded'
-topic_prediction=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
+topic_prediction_vectorizer=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
 # topic_prediction_model=read('topic_prediction_model','p');print 'topic prediction model loaded'
 author_matrix_compressed = read('author_matrix_compressed','p'); print 'author matrix (after SVD) loaded'
 author_matrix = read('author_matrix','p'); print 'author matrix (before SVD) loaded'
@@ -233,7 +233,7 @@ def show_feature_words(author):
 def decode_topic(topicID):
     return topic_encoder.inverse_transform(topicID)
 
-def related_topics(query, quoteID, vectorizer=topic_prediction, topic_predictor=topic_predictor):
+def related_topics(query, quoteID, vectorizer=topic_prediction_vectorizer, topic_predictor=topic_predictor):
     new_vec = vectorizer.transform([query + ' ' + ID_to_quote[quoteID]])
     topics = topic_encoder.inverse_transform(np.argsort(topic_predictor.decision_function(new_vec).ravel())[::-1][:8]).tolist()
     return topics
