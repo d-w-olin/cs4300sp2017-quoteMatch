@@ -6,6 +6,10 @@ import numpy as np
 from scipy.stats import entropy    
 from nltk.stem import WordNetLemmatizer as wnl
 from nltk.tokenize import RegexpTokenizer
+import nltk
+from nltk.corpus import brown
+from nltk.corpus import wordnet as wn
+import operator
 from stemming.porter2 import stem
 from sklearn.feature_extraction.text import TfidfVectorizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -74,6 +78,7 @@ theta_z=read('theta_zz','p');print 'topic distribution loaded'
 biterm_matrix=read('bmatrix','p');print 'biterm_matrix loaded'
 primary_indexes=read('primary_topics','p');print 'primary topics loaded'
 secondary_indexes=read('secondary_topics','p');print 'secondary topics loaded'
+freqs=read('freqs','p');print 'Brown word frequencies loaded'
 
 print "constructing tokenizer"
 #Construct a Tokenizer that deals with contractions 
@@ -150,6 +155,32 @@ def topic_given_biterm(biterm,theta_z,pWZ):
     result= Evidence[b0-168,:]*Evidence[b1-168,:]/evidence*1.0
     return result
 
+get the most common synonym for a given word
+def get_best_synonym(word):
+    syns = []
+    syn_whl_words = []
+    for syn in wn.synsets(word):
+        for l in syn.lemmas():
+            if l.name() != word:
+                syns.append((l.name(),l.count()))
+    #print "Syns" , len(syns)
+    for word in syns:
+        #print word
+        if '_' not in word[0]:
+            #print word[0]
+            syn_whl_words.append(word)
+    syn_whl_words.sort(key=operator.itemgetter(1),reverse=True)
+    
+    return  syn_whl_words[0][0]
+
+#add synonyms to the query
+def augment_query(token_list):
+    new_query = []
+    for token in token_list:
+        new_query.append(token)
+        if freqs[token] < 1000:
+            new_query.append(get_best_synonym(token))
+    return new_query
 
 def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=entropy,reverse=-1):
     if filter_by !=False:
@@ -162,6 +193,7 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=
         all_indices = list((set(all_indices)))
         matrix = np.matrix(matrix)[np.array(all_indices),:]
     bow = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
+    bow = augment_query(bow)
     result=get_biterms(bow,vocab_to_index)
     topic_doc=np.zeros((1,len(theta_z)))
     prior = biterm_prior(result)
@@ -195,7 +227,30 @@ def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
     #denote tuning parameters as \alpha, \beta and \theta
     query_modified = alpha*query+beta*matrix[docs-1,:].sum(axis=0)/len(docs)#-theta*matrix[other_docs-1,:].sum(axis=0)/len(other_docs)
     return query_modified
-  
+
+def RocchioRetrieval(rocchio_query,rank,filter_by=False,matrix=bmatrix,similarity_measure=entropy,reverse=-1):
+    if filter_by !=False:
+        all_indices =[]
+        for f in filter_by:
+            main_indexes=primary_indexes[f]
+            second_indexes=secondary_indexes[f]
+            all_indices.extend(main_indexes)
+            all_indices.extend(secondary_indexes)
+        all_indices = list((set(all_indices)))
+        matrix = np.matrix(matrix)[np.array(all_indices),:]
+    all_scores = []
+    for i,data in enumerate(matrix):
+            all_scores.append(similarity_measure(np.asarray(data).reshape(-1)+10**(-8),rocchio_query+10**(-8)))
+    top20=np.asarray(all_scores).argsort()[0:rank]
+    result = []
+    if filter_by ==False:
+        for index in top20:
+            result.append((ID_to_quote[index],ID_to_author[index],index))
+        return result
+    else:
+        for index in top20:
+            result.append((ID_to_quote[all_indices[index]],ID_to_author[all_indices[index]],all_indices[index]))
+        return result 
 ##===================================================Predict Author============================================================
 
 ##Recommended authors, based on the query and the quote that the user clicks on
@@ -261,3 +316,4 @@ def sentimental_analysis(string):
             anew_score+=np.array(word_to_attitude[stem(word)])
     return (intensity_score,anew_score)
 
+#
