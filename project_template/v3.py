@@ -230,7 +230,7 @@ def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
     query_modified = alpha*query+beta*matrix[docs-1,:].sum(axis=0)/len(docs)#-theta*matrix[other_docs-1,:].sum(axis=0)/len(other_docs)
     return query_modified
 
-def RocchioRetrieval(rocchio_query,rank,filter_by=False,matrix=bmatrix,similarity_measure=entropy,reverse=-1):
+def RocchioRetrieval(rocchio_query,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=entropy,reverse=-1):
     if filter_by !=False:
         all_indices =[]
         for f in filter_by:
