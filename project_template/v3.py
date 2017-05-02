@@ -145,7 +145,7 @@ def topic_given_biterm(z,biterm,theta_z,pWZ):
     return result
 
 
-def BTMRetrieval(s,rank,filter_by=False,matrix=bmatrix,similarity_measure=entropy,reverse=-1):
+def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=entropy,reverse=-1):
     if filter_by !=False:
         all_indices =[]
         for f in filter_by:
@@ -155,7 +155,7 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=bmatrix,similarity_measure=entrop
             all_indices.extend(secondary_indexes)
         all_indices = list((set(all_indices)))
         matrix = np.matrix(matrix)[np.array(all_indices),:]
-    bow = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words1]
+    bow = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
     result=get_biterms(bow,vocab_to_index)
     topic_doc=np.zeros((1,len(theta_z)))
     prior = biterm_prior(result)
