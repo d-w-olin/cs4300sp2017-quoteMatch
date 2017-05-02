@@ -197,6 +197,7 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=
         all_indices = list((set(all_indices)))
         matrix = np.matrix(matrix)[np.array(all_indices),:]
     bow = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
+    #removing synonyms at line below because they don't seem to add much, and we need more speed
     bow = augment_query(bow)
     result=get_biterms(bow,vocab_to_index)
     topic_doc=np.zeros((1,len(theta_z)))
