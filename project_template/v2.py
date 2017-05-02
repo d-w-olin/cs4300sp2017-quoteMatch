@@ -142,6 +142,6 @@ def BTMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
     top20=np.asarray(all_scores).argsort()[0:rank]
     result = []
     for index in top20:
-        result.append((ID_to_quote[index+1],ID_to_author[index+1],all_scores[index]))
-        print "{}: {}\n\n".format(ID_to_quote[index+1], all_scores[index])
+        result.append((ID_to_quote[index+1],ID_to_author[index+1],index+1))
+        # print "{}: {}\n\n".format(ID_to_quote[index+1], all_scores[index])
     return result

@@ -66,6 +66,11 @@ topic_list = read('all_topics_prediction','p'); print 'all topic loaded'
 ID_to_quote=read("ID_to_quote",'p');print 'ID_to_quote loaded'
 ID_to_author=read("ID_to_author",'p');print 'ID_to_author loaded'
 topic_predictor=read("topic_predictor",'p'); print 'topic_predictor loaded'
+vocab_to_index_bi=read('vocab_to_index_1','json'); print 'vocab_to_index for biterm loaded...'
+index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
+phiwz=read('phiwz','p');print 'word-topic distribution loaded'
+theta_z=read('thetaz','p');print 'topic distribution loaded'        
+biterm_matrix=read('biterm_matrix_full','p');print 'biterm_matrix loaded'
 
 
 print "constructing tokenizer"
@@ -140,7 +145,7 @@ def topic_given_biterm(z,biterm,theta_z,pWZ):
 
 def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=entropy,reverse=-1):
     if filter_by !=False:
-        indexes= np.where(topic_lists==filter_by)[0]
+        indexes= np.where(topic_list==filter_by)[0]
         matrix = np.matrix(matrix)[np.array(indexes),:]
     query_tokens = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
     result=get_biterms(query_tokens,vocab_to_index_bi)
@@ -164,12 +169,12 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=
     if filter_by ==False:
         for index in top20:
             result.append((ID_to_quote[index],ID_to_author[index],index))
-            print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
+            # print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
         return result
     else:
         for index in top20:
             result.append((ID_to_quote[indexes[index]],ID_to_author[indexes[index]],indexes[index]))
-            print "{}: {}\n\n".format(ID_to_quote[indexes[index]], all_scores[index])
+            # print "{}: {}\n\n".format(ID_to_quote[indexes[index]], all_scores[index])
         return result
 
 ##=====================================================Rocchio Update==========================================================

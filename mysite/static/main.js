@@ -1,3 +1,32 @@
+$("#topic-selector").selectize({
+    maxItems: 3
+});
+
+if ($("#input").val().match(/\S+/g) == null) {
+    $("#word-count").text("Word Count: 0/200");
+} else {
+    $("#word-count").text("Word Count: " + $("#input").val().match(/\S+/g).length + "/200");
+}
+
+$("#input").on('keyup', function() {
+    var words = this.value.match(/\S+/g);
+    if (words == null) {
+        words = 0;
+    } else {
+        words = words.length;
+    }
+
+    if (words > 200) {
+      // Split the string on first 200 words and rejoin on spaces
+      var trimmed = $(this).val().split(/\s+/, 200).join(" ");
+      // Add a space at the end to make sure more typing creates new words
+      $(this).val(trimmed + " ");
+    }
+    else {
+      $('#word-count').text("Word Count: " + words + "/200");
+    }
+});
+
 var query = ''
 
 function authorInfo(input) {

@@ -9,13 +9,18 @@ from django.http import JsonResponse
 import urllib
 import wikipedia
 from bs4 import BeautifulSoup
-from .v3 import relevant_author
+# from .v3 import relevant_author
 
 # Create your views here.
 def index(request):
     output_list = ''
     output= ''
     search = ''
+
+    try:
+        topics = map(lambda x: int(x), request.GET.getlist('topic[]', None))
+    except Exception as e:
+        topics = []
 
     if request.GET.get('version'):
         version = request.GET.get('version')
@@ -35,7 +40,12 @@ def index(request):
             if version == 'v2':
                 output_list = retrieval2(search, 100)
             if version == 'v3':
-                output_list = retrieval3(search, 100)
+                if topics == []:
+                    output_list = retrieval3(search, 100)
+                else:
+                    print topics
+                    output_list = retrieval3(search, 100, filter_by=topics)
+                    print "first: {}".format(output_list[0])
 
             paginator = Paginator(output_list, 15)
             page = request.GET.get('page')
@@ -49,6 +59,7 @@ def index(request):
     return render_to_response('project_template/index.html', 
                           {'input': search,
                            'output': output,
+                           'topics': topics,
                            'magic_url': request.get_full_path(),
                            })
 

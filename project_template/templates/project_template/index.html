@@ -1,6 +1,6 @@
 <html>
     <head>
-        <!-- <link rel="stylesheet" href="/static/bootstrap.min.css"> -->
+        <link rel="stylesheet" href="/static/selectize.default.css">
         <link rel="stylesheet" href="/static/main.css">
     </head>
 
@@ -31,10 +31,132 @@
                 <div class="left">
                     <form class="form-group" method="GET">
                         <p class="title">Enter Query Here</p>
+                        <span id="word-count">Word Count: 0/200</span>
                         <div class="form-group">
                             <input type="hidden" name="version" value="v3">
                             <textarea id="input" type="text" name="search" class="form-control" placeholder="Your Input" rows="15">{% if input %}{{input}}{% endif %}</textarea>
                         </div>
+                        <!-- $('#topic-selector').find(":selected").each(function(i, d) {console.log(d.value);}) -->
+                        <select id="topic-selector" name="topic[]" mutliple class="demo-default" placeholder="Select a topic...">
+                            <option value="">Select a topic...</option>
+                            <option value="0">Age</option>
+                            <option value="1">Alone</option>
+                            <option value="2">Amazing</option>
+                            <option value="3">Anger</option>
+                            <option value="4">Anniversary</option>
+                            <option value="5">Architecture</option>
+                            <option value="6">Art</option>
+                            <option value="7">Attitude</option>
+                            <option value="8">Beauty</option>
+                            <option value="9">Best</option>
+                            <option value="10">Birthday</option>
+                            <option value="11">Business</option>
+                            <option value="12">Car</option>
+                            <option value="13">Change</option>
+                            <option value="14">Christmas</option>
+                            <option value="15">Communication</option>
+                            <option value="16">Computers</option>
+                            <option value="17">Cool</option>
+                            <option value="18">Courage</option>
+                            <option value="19">Dad</option>
+                            <option value="20">Dating</option>
+                            <option value="21">Death</option>
+                            <option value="22">Design</option>
+                            <option value="23">Diet</option>
+                            <option value="24">Dreams</option>
+                            <option value="25">Easter</option>
+                            <option value="26">Education</option>
+                            <option value="27">Environmental</option>
+                            <option value="28">Equality</option>
+                            <option value="29">Experience</option>
+                            <option value="30">Failure</option>
+                            <option value="31">Faith</option>
+                            <option value="32">Family</option>
+                            <option value="33">Famous</option>
+                            <option value="34">Father's Day</option>
+                            <option value="35">Fear</option>
+                            <option value="36">Finance</option>
+                            <option value="37">Fitness</option>
+                            <option value="38">Food</option>
+                            <option value="39">Forgiveness</option>
+                            <option value="40">Freedom</option>
+                            <option value="41">Friendship</option>
+                            <option value="42">Funny</option>
+                            <option value="43">Future</option>
+                            <option value="44">Gardening</option>
+                            <option value="45">God</option>
+                            <option value="46">Good</option>
+                            <option value="47">Government</option>
+                            <option value="48">Graduation</option>
+                            <option value="49">Great</option>
+                            <option value="50">Happiness</option>
+                            <option value="51">Health</option>
+                            <option value="52">History</option>
+                            <option value="53">Home</option>
+                            <option value="54">Hope</option>
+                            <option value="55">Humor</option>
+                            <option value="56">Imagination</option>
+                            <option value="57">Inspirational</option>
+                            <option value="58">Intelligence</option>
+                            <option value="59">Jealousy</option>
+                            <option value="60">Knowledge</option>
+                            <option value="61">Leadership</option>
+                            <option value="62">Learning</option>
+                            <option value="63">Legal</option>
+                            <option value="64">Life</option>
+                            <option value="65">Love</option>
+                            <option value="66">Marriage</option>
+                            <option value="67">Medical</option>
+                            <option value="68">Memorial Day</option>
+                            <option value="69">Men</option>
+                            <option value="70">Mom</option>
+                            <option value="71">Money</option>
+                            <option value="72">Morning</option>
+                            <option value="73">Mother's Day</option>
+                            <option value="74">Motivational</option>
+                            <option value="75">Movies</option>
+                            <option value="76">Moving On</option>
+                            <option value="77">Music</option>
+                            <option value="78">Nature</option>
+                            <option value="79">New Years</option>
+                            <option value="80">Parenting</option>
+                            <option value="81">Patience</option>
+                            <option value="82">Patriotism</option>
+                            <option value="83">Peace</option>
+                            <option value="84">Pet</option>
+                            <option value="85">Poetry</option>
+                            <option value="86">Politics</option>
+                            <option value="87">Positive</option>
+                            <option value="88">Power</option>
+                            <option value="89">Relationship</option>
+                            <option value="90">Religion</option>
+                            <option value="91">Respect</option>
+                            <option value="92">Romantic</option>
+                            <option value="93">Sad</option>
+                            <option value="94">Saint Patrick's Day</option>
+                            <option value="95">Science</option>
+                            <option value="96">Smile</option>
+                            <option value="97">Society</option>
+                            <option value="98">Sports</option>
+                            <option value="99">Strength</option>
+                            <option value="100">Success</option>
+                            <option value="101">Sympathy</option>
+                            <option value="102">Teacher</option>
+                            <option value="103">Technology</option>
+                            <option value="104">Teen</option>
+                            <option value="105">Thankful</option>
+                            <option value="106">Thanksgiving</option>
+                            <option value="107">Time</option>
+                            <option value="108">Travel</option>
+                            <option value="109">Trust</option>
+                            <option value="110">Truth</option>
+                            <option value="111">Valentine's Day</option>
+                            <option value="112">War</option>
+                            <option value="113">Wedding</option>
+                            <option value="114">Wisdom</option>
+                            <option value="115">Women</option>
+                            <option value="116">Work</option>
+                        </select>
                         <button type="submit" class="btn btn-info">GO</button>
                     </form>
 
@@ -90,6 +212,8 @@
             </div>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+        <script src="/static/selectize.js"></script>
         <script src="/static/main.js"></script>
     </body>
 </html>
