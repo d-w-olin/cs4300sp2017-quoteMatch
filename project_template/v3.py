@@ -58,7 +58,7 @@ author_feature_words=read('author_feature_words','json'); print 'feature words f
 topic_encoder=read('topic_encoder','p');print 'topic decoded loaded'
 author_to_index=read('author_to_index','json');print 'author_to_index loaded'
 index_to_author=read('index_to_author','json');print 'index_to_author loaded'
-# topic_prediction=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
+topic_prediction_vectorizer=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
 # topic_prediction_model=read('topic_prediction_model','p');print 'topic prediction model loaded'
 author_matrix_compressed = read('author_matrix_compressed','p'); print 'author matrix (after SVD) loaded'
 author_matrix = read('author_matrix','p'); print 'author matrix (before SVD) loaded'
@@ -151,7 +151,7 @@ def topic_given_biterm(biterm,theta_z,pWZ):
     return result
 
 
-def BTMRetrieval(s,rank,filter_by=False,matrix=bmatrix,similarity_measure=entropy,reverse=-1):
+def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=entropy,reverse=-1):
     if filter_by !=False:
         all_indices =[]
         for f in filter_by:
@@ -161,7 +161,7 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=bmatrix,similarity_measure=entrop
             all_indices.extend(secondary_indexes)
         all_indices = list((set(all_indices)))
         matrix = np.matrix(matrix)[np.array(all_indices),:]
-    bow = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words1]
+    bow = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
     result=get_biterms(bow,vocab_to_index)
     topic_doc=np.zeros((1,len(theta_z)))
     prior = biterm_prior(result)
@@ -199,15 +199,18 @@ def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
 ##===================================================Predict Author============================================================
 
 ##Recommended authors, based on the query and the quote that the user clicks on
-def relevant_author (query,ID,matrix,vectorizer,numReturn=5,similarity_measure=entropy):
-    longstring = query+' '+updated_newIDQuote[ID]
-    new_vector = vectorizer.transform([longstring]).toarray()[0,167:] 
+def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction_vectorizer,numReturn=5,similarity_measure=entropy):
+    longstring = query+' '+ID_to_quote[ID]
+    new_vector = vectorizer.transform([longstring]).toarray()[0,167:]
     all_scores = []
     matrix = matrix.todense()
     for row in matrix:
             all_scores.append(similarity_measure(np.asarray(row).reshape(-1)+10**-6,np.asarray(new_vector)+10**-6))
     results=np.asarray(all_scores).argsort()[0:numReturn]
-    return results
+    res = []
+    for i in range(len(results)):
+        res.append(ID_to_author[results[i]])
+    return res
 
 ## Similar authors, based entirely on the authors' textual features
 def similar_author (ID,matrix=author_matrix_compressed,numReturn=5,similarity_measure=entropy):
@@ -230,10 +233,11 @@ def show_feature_words(author):
 def decode_topic(topicID):
     return topic_encoder.inverse_transform(topicID)
 
-def related_topics(query, quoteID, topic_predictor ):
-    new_vec = tfidf_vec.transform([query + ID_to_quote[quoteID]])
-    topics = topic_encoder.inverse_transform(np.argsort(ovr.decision_function(new_vec).ravel())[::-1][:8]).tolist()
+def related_topics(query, quoteID, vectorizer=topic_prediction_vectorizer, topic_predictor=topic_predictor):
+    new_vec = vectorizer.transform([query + ' ' + ID_to_quote[quoteID]])
+    topics = topic_encoder.inverse_transform(np.argsort(topic_predictor.decision_function(new_vec).ravel())[::-1][:8]).tolist()
     return topics
+
 ##=================================================Other Utility Functions=====================================================
 ## Unstem words,may be used to decode key features
 def unstem(word):
