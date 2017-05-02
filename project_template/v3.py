@@ -195,7 +195,30 @@ def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
     #denote tuning parameters as \alpha, \beta and \theta
     query_modified = alpha*query+beta*matrix[docs-1,:].sum(axis=0)/len(docs)#-theta*matrix[other_docs-1,:].sum(axis=0)/len(other_docs)
     return query_modified
-  
+
+def RocchioRetrieval(rocchio_query,rank,filter_by=False,matrix=bmatrix,similarity_measure=entropy,reverse=-1):
+    if filter_by !=False:
+        all_indices =[]
+        for f in filter_by:
+            main_indexes=primary_indexes[f]
+            second_indexes=secondary_indexes[f]
+            all_indices.extend(main_indexes)
+            all_indices.extend(secondary_indexes)
+        all_indices = list((set(all_indices)))
+        matrix = np.matrix(matrix)[np.array(all_indices),:]
+    all_scores = []
+    for i,data in enumerate(matrix):
+            all_scores.append(similarity_measure(np.asarray(data).reshape(-1)+10**(-8),rocchio_query+10**(-8)))
+    top20=np.asarray(all_scores).argsort()[0:rank]
+    result = []
+    if filter_by ==False:
+        for index in top20:
+            result.append((ID_to_quote[index],ID_to_author[index],index))
+        return result
+    else:
+        for index in top20:
+            result.append((ID_to_quote[all_indices[index]],ID_to_author[all_indices[index]],all_indices[index]))
+        return result 
 ##===================================================Predict Author============================================================
 
 ##Recommended authors, based on the query and the quote that the user clicks on
