@@ -57,7 +57,6 @@ author_feature_words=read('author_feature_words','json'); print 'feature words f
 topic_encoder=read('topic_encoder','p');print 'topic decoded loaded'
 author_to_index=read('author_to_index','json');print 'author_to_index loaded'
 index_to_author=read('index_to_author','json');print 'index_to_author loaded'
-cv=read('LDA_model','p'); print 'Vectorizer loaded'
 # topic_prediction=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
 # topic_prediction_model=read('topic_prediction_model','p');print 'topic prediction model loaded'
 author_matrix_compressed = read('author_matrix_compressed','p'); print 'author matrix (after SVD) loaded'
@@ -66,27 +65,31 @@ author_prediction_vectorizer=read('author_prediction_vectorizer','p');print 'aut
 topic_list = read('all_topics_prediction','p'); print 'all topic loaded'
 ID_to_quote=read("ID_to_quote",'p');print 'ID_to_quote loaded'
 ID_to_author=read("ID_to_author",'p');print 'ID_to_author loaded'
-
-## Topic Model:
-
-counts =read('LDA_trainingMatrix','p');print 'trainning_matrix loaded'
-counts=recover_Matrix(counts,0,counts.shape[0]); print 'training data loaded...'
-res= read('LDA_fittedMatrix','p'); print 'Fitted Topic Matrix loaded...'
+topic_predictor=read("topic_predictor",'p'); print 'topic_predictor loaded'
 
 
-# Otherwise use biterm model
-vocab_to_index_bi=read('vocab_to_index_1','json'); print 'vocab_to_index for biterm loaded...'
-index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
-phiwz=read('phiwz','p');print 'word-topic distribution loaded'
-theta_z=read('thetaz','p');print 'topic distribution loaded'
-biterm_matrix=read('biterm_matrix_full','p');print 'biterm_matrix loaded'
-
-        
-        
 print "constructing tokenizer"
 #Construct a Tokenizer that deals with contractions 
 regtokenizer =RegexpTokenizer("[a-z]+\'?")
 contractions_re = re.compile('(%s)' % '|'.join(contractions_dict.keys()))
+
+
+
+def importOption(InputString):
+    lenquery= len([t for t in regtokenizer.tokenize(expand_contractions(InputString.lower()))])
+    if lenquery<=200:
+        ## Apply biterm model if the length of the query is less than 200
+        # Otherwise use biterm model
+        vocab_to_index_bi=read('vocab_to_index_1','json'); print 'vocab_to_index for biterm loaded...'
+        index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
+        phiwz=read('phiwz','p');print 'word-topic distribution loaded'
+        theta_z=read('thetaz','p');print 'topic distribution loaded'        
+        biterm_matrix=read('biterm_matrix_full','p');print 'biterm_matrix loaded'
+    else:## Topic Model:
+        cv=read('LDA_model','p'); print 'Vectorizer loaded'
+        counts =read('LDA_trainingMatrix','p');print 'trainning_matrix loaded'
+        counts=recover_Matrix(counts,0,counts.shape[0]); print 'training data loaded...'
+        res= read('LDA_fittedMatrix','p'); print 'Fitted Topic Matrix loaded...'
 
 def expand_contractions(s, contractions_dict=contractions_dict):
     def replace(match):
@@ -222,9 +225,12 @@ def show_feature_words(author):
     return author_feature_words[author]
 ##=================================================Predict Topic ==========================================
 def decode_topic(topicID):
-    return topic_ecoder.inverse_transform(topicID)
+    return topic_encoder.inverse_transform(topicID)
 
-
+def related_topics(query, quoteID, topic_predictor ):
+    new_vec = tfidf_vec.transform([query + ID_to_quote[quoteID]])
+    topics = topic_encoder.inverse_transform(np.argsort(ovr.decision_function(new_vec).ravel())[::-1][:8]).tolist()
+    return topics
 ##=================================================Other Utility Functions=====================================================
 ## Unstem words,may be used to decode key features
 def unstem(word):
