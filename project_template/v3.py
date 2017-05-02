@@ -155,7 +155,7 @@ def topic_given_biterm(biterm,theta_z,pWZ):
     result= Evidence[b0-168,:]*Evidence[b1-168,:]/evidence*1.0
     return result
 
-get the most common synonym for a given word
+#get the most common synonym for a given word
 def get_best_synonym(word):
     syns = []
     syn_whl_words = []
@@ -170,9 +170,11 @@ def get_best_synonym(word):
             #print word[0]
             syn_whl_words.append(word)
     syn_whl_words.sort(key=operator.itemgetter(1),reverse=True)
-    
-    return  syn_whl_words[0][0]
-
+    if len(syn_whl_words) > 0:
+        return  syn_whl_words[0][0]
+    else:
+        return None
+        
 #add synonyms to the query
 def augment_query(token_list):
     new_query = []
