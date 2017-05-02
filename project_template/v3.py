@@ -176,7 +176,7 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=
         print("\n")
         for index in top20:
             result.append((ID_to_quote[index],ID_to_author[index],index))
-        return top20
+        return result
     else:
         print("\n")
         for index in top20:
