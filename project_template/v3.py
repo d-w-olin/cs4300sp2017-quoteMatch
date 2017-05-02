@@ -14,7 +14,7 @@ from stemming.porter2 import stem
 from sklearn.feature_extraction.text import TfidfVectorizer
 # from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 # analyzer = SentimentIntensityAnalyzer()  
-from operator import itemgetter
+#from operator import itemgetter
 # import en_core_web_sm as en_core
 from scipy.sparse.linalg import svds
 # nlp=en_core.load()
@@ -59,22 +59,22 @@ print "Recovering files... "
 ## All datasets and dictionary
 contractions_dict=read('contractions','json'); print 'contractions dictionary loaded...'
 stop_words=read('stop_words','p');print 'stop_words loaded'
-word_to_attitude=read('word_to_attitude','json'); print 'word_attitude loaded'
+#word_to_attitude=read('word_to_attitude','json'); print 'word_attitude loaded'
 author_feature_words=read('author_feature_words','json'); print 'feature words for authors loaded'
 topic_encoder=read('topic_encoder','p');print 'topic decoded loaded'
 author_to_index=read('author_to_index','json');print 'author_to_index loaded'
 index_to_author=read('index_to_author','json');print 'index_to_author loaded'
 topic_prediction_vectorizer=read('topic_prediction_vectorizer','p');print 'topic prediction vectorizer loaded'
 # topic_prediction_model=read('topic_prediction_model','p');print 'topic prediction model loaded'
-author_matrix_compressed = read('author_matrix_compressed','p'); print 'author matrix (after SVD) loaded'
+# author_matrix_compressed = read('author_matrix_compressed','p'); print 'author matrix (after SVD) loaded'
 author_matrix = read('author_matrix','p'); print 'author matrix (before SVD) loaded'
 author_prediction_vectorizer=read('author_prediction_vectorizer','p');print 'author prediction vectorizer loaded'
-topic_list = read('all_topics_prediction','p'); print 'all topic loaded'
+#topic_list = read('all_topics_prediction','p'); print 'all topic loaded'
 ID_to_quote=read("ID_to_quote",'p');print 'ID_to_quote loaded'
 ID_to_author=read("ID_to_author",'p');print 'ID_to_author loaded'
 topic_predictor=read("topic_predictor",'p'); print 'topic_predictor loaded'
 vocab_to_index = read('vocab_to_index','p');print 'vocab_to_index loaded'
-index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
+#index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
 phiwz=read('phiw_zz','p');print 'word-topic distribution loaded'
 theta_z=read('theta_zz','p');print 'topic distribution loaded'        
 biterm_matrix=read('bmatrix','p');print 'biterm_matrix loaded'
@@ -111,19 +111,19 @@ def expand_contractions(s, contractions_dict=contractions_dict):
     return contractions_re.sub(replace, s)
 
 
-def TMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
-    query_tokens = cv.transform(s)
-    unnormalized = np.matrix(model.transform(query_tokens))
-    normalized=unnormalized/unnormalized.sum(axis =1)
-    all_scores = []
-    for i,data in enumerate(res):
-        all_scores.append(similarity_measure(np.asarray(data).reshape(-1),np.asarray(normalized).reshape(-1)))
+#def TMRetrieval(s,rank,similarity_measure=entropy,reverse=-1):
+#    query_tokens = cv.transform(s)
+#    unnormalized = np.matrix(model.transform(query_tokens))
+#    normalized=unnormalized/unnormalized.sum(axis =1)
+#    all_scores = []
+#    for i,data in enumerate(res):
+#        all_scores.append(similarity_measure(np.asarray(data).reshape(-1),np.asarray(normalized).reshape(-1)))
 
-    top20=np.asarray(all_scores).argsort()[reverse*rank:]
-    result = []
-    for index in top20:
-        result.append((ID_to_quote[index],ID_to_author[index+1],all_scores[index]))
-    return result
+#    top20=np.asarray(all_scores).argsort()[reverse*rank:]
+#    result = []
+#    for index in top20:
+#        result.append((ID_to_quote[index],ID_to_author[index+1],all_scores[index]))
+#    return result
 
 #===================================================Biterm Model=====================================
 def biterm_prior(biterms):
@@ -223,38 +223,38 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=
 #def irrelevant(docs, all_docs):
 #  return set(all_docs)-set(docs)
   
-def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
+#def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
     # docs as list of IDs and query is the original query (in the form of a vector)
     # Now we treat each doc in docs as 'relevant' and all_docs-docs as irrelevant
     #other_docs=list(irrelevant(docs, all_docs))
     
     #denote tuning parameters as \alpha, \beta and \theta
-    query_modified = alpha*query+beta*matrix[docs-1,:].sum(axis=0)/len(docs)#-theta*matrix[other_docs-1,:].sum(axis=0)/len(other_docs)
-    return query_modified
+#    query_modified = alpha*query+beta*matrix[docs-1,:].sum(axis=0)/len(docs)#-theta*matrix[other_docs-1,:].sum(axis=0)/len(other_docs)
+#    return query_modified
 
-def RocchioRetrieval(rocchio_query,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=entropy,reverse=-1):
-    if filter_by !=False:
-        all_indices =[]
-        for f in filter_by:
-            main_indexes=primary_indexes[f]
-            second_indexes=secondary_indexes[f]
-            all_indices.extend(main_indexes)
-            all_indices.extend(secondary_indexes)
-        all_indices = list((set(all_indices)))
-        matrix = np.matrix(matrix)[np.array(all_indices),:]
-    all_scores = []
-    for i,data in enumerate(matrix):
-            all_scores.append(similarity_measure(np.asarray(data).reshape(-1)+10**(-8),rocchio_query+10**(-8)))
-    top20=np.asarray(all_scores).argsort()[0:rank]
-    result = []
-    if filter_by ==False:
-        for index in top20:
-            result.append((ID_to_quote[index],ID_to_author[index],index))
-        return result
-    else:
-        for index in top20:
-            result.append((ID_to_quote[all_indices[index]],ID_to_author[all_indices[index]],all_indices[index]))
-        return result 
+#def RocchioRetrieval(rocchio_query,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=entropy,reverse=-1):
+#    if filter_by !=False:
+#       all_indices =[]
+#        for f in filter_by:
+#            main_indexes=primary_indexes[f]
+#            second_indexes=secondary_indexes[f]
+#            all_indices.extend(main_indexes)
+#            all_indices.extend(secondary_indexes)
+#        all_indices = list((set(all_indices)))
+#        matrix = np.matrix(matrix)[np.array(all_indices),:]
+#    all_scores = []
+#    for i,data in enumerate(matrix):
+#            all_scores.append(similarity_measure(np.asarray(data).reshape(-1)+10**(-8),rocchio_query+10**(-8)))
+#    top20=np.asarray(all_scores).argsort()[0:rank]
+#    result = []
+#    if filter_by ==False:
+#        for index in top20:
+#            result.append((ID_to_quote[index],ID_to_author[index],index))
+#        return result
+#    else:
+#        for index in top20:
+#            result.append((ID_to_quote[all_indices[index]],ID_to_author[all_indices[index]],all_indices[index]))
+#        return result 
 ##===================================================Predict Author============================================================
 
 ##Recommended authors, based on the query and the quote that the user clicks on
@@ -272,19 +272,19 @@ def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction_
     return res
 
 ## Similar authors, based entirely on the authors' textual features
-def similar_author (ID,matrix=author_matrix_compressed,numReturn=5,similarity_measure=entropy):
-    all_scores = []
-    author=author_to_index[ID_to_author[ID]]
-    for row in matrix:
-        all_scores.append(similarity_measure(np.asarray(row).reshape(-1),np.asarray(matrix[author,:])))
-    print all_scores[:5]
-    results=np.asarray(all_scores).argsort()[1:numReturn+1]
-    print results
-
-    for i in range(numReturn):
-        results[i] = ID_to_author[results[i]]
-
-    return results
+#def similar_author (ID,matrix=author_matrix_compressed,numReturn=5,similarity_measure=entropy):
+#    all_scores = []
+#    author=author_to_index[ID_to_author[ID]]
+#    for row in matrix:
+#        all_scores.append(similarity_measure(np.asarray(row).reshape(-1),np.asarray(matrix[author,:])))
+#    print all_scores[:5]
+#   results=np.asarray(all_scores).argsort()[1:numReturn+1]
+#    print results
+#
+#    for i in range(numReturn):
+#        results[i] = ID_to_author[results[i]]
+#
+#    return results
 
 def show_feature_words(author):
     return author_feature_words[author]
