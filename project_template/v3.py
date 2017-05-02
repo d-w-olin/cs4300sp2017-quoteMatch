@@ -155,6 +155,32 @@ def topic_given_biterm(biterm,theta_z,pWZ):
     result= Evidence[b0-168,:]*Evidence[b1-168,:]/evidence*1.0
     return result
 
+get the most common synonym for a given word
+def get_best_synonym(word):
+    syns = []
+    syn_whl_words = []
+    for syn in wn.synsets(word):
+        for l in syn.lemmas():
+            if l.name() != word:
+                syns.append((l.name(),l.count()))
+    #print "Syns" , len(syns)
+    for word in syns:
+        #print word
+        if '_' not in word[0]:
+            #print word[0]
+            syn_whl_words.append(word)
+    syn_whl_words.sort(key=operator.itemgetter(1),reverse=True)
+    
+    return  syn_whl_words[0][0]
+
+#add synonyms to the query
+def augment_query(token_list):
+    new_query = []
+    for token in token_list:
+        new_query.append(token)
+        if freqs[token] < 1000:
+            new_query.append(get_best_synonym(token))
+    return new_query
 
 def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=entropy,reverse=-1):
     if filter_by !=False:
@@ -167,6 +193,7 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=
         all_indices = list((set(all_indices)))
         matrix = np.matrix(matrix)[np.array(all_indices),:]
     bow = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
+    bow = augment_query(bow)
     result=get_biterms(bow,vocab_to_index)
     topic_doc=np.zeros((1,len(theta_z)))
     prior = biterm_prior(result)
@@ -289,29 +316,4 @@ def sentimental_analysis(string):
             anew_score+=np.array(word_to_attitude[stem(word)])
     return (intensity_score,anew_score)
 
-#get the most common synonym for a given word
-def get_best_synonym(word):
-    syns = []
-    syn_whl_words = []
-    for syn in wn.synsets(word):
-        for l in syn.lemmas():
-            if l.name() != word:
-                syns.append((l.name(),l.count()))
-    #print "Syns" , len(syns)
-    for word in syns:
-        #print word
-        if '_' not in word[0]:
-            #print word[0]
-            syn_whl_words.append(word)
-    syn_whl_words.sort(key=operator.itemgetter(1),reverse=True)
-    
-    return  syn_whl_words[0][0]
-
-#add synonyms to the query
-def augment_query(token_list):
-    new_query = []
-    for token in token_list:
-        new_query.append(token)
-        if freqs[token] < 1000:
-            new_query.append(get_best_synonym(token))
-    return new_query
+#
