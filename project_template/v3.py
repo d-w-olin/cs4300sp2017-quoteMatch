@@ -171,19 +171,17 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=bmatrix,similarity_measure=entrop
     for i,data in enumerate(matrix):
             all_scores.append(similarity_measure(np.asarray(data).reshape(-1)+10**(-8),np.asarray(topic_doc).reshape(-1))+10**(-8))
     top20=np.asarray(all_scores).argsort()[0:rank]
+    result = []
     if filter_by ==False:
         print("\n")
         for index in top20:
-            print (ID_to_quote[index],all_scores[index])
-            print ('\n')
+            result.append((ID_to_quote[index],ID_to_author[index],index))
         return top20
     else:
         print("\n")
         for index in top20:
-            print (ID_to_quote[all_indices[index]],all_scores[index])
-            print ('\n')
-        getter = itemgetter(*top20)
-        return list(getter(all_indices))
+            result.append((ID_to_quote[all_indices[index]],ID_to_author[all_indices[index]],all_indices[index]))
+        return result
 ##=====================================================Rocchio Update==========================================================
 ##Use Rocchio updating to update user query
 #def irrelevant(docs, all_docs):
