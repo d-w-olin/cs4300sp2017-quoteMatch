@@ -6,6 +6,10 @@ import numpy as np
 from scipy.stats import entropy    
 from nltk.stem import WordNetLemmatizer as wnl
 from nltk.tokenize import RegexpTokenizer
+import nltk
+from nltk.corpus import brown
+from nltk.corpus import wordnet as wn
+import operator
 from stemming.porter2 import stem
 from sklearn.feature_extraction.text import TfidfVectorizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -74,6 +78,7 @@ theta_z=read('theta_zz','p');print 'topic distribution loaded'
 biterm_matrix=read('bmatrix','p');print 'biterm_matrix loaded'
 primary_indexes=read('primary_topics','p');print 'primary topics loaded'
 secondary_indexes=read('secondary_topics','p');print 'secondary topics loaded'
+freqs=read('freqs','p');print 'Brown word frequencies loaded'
 
 print "constructing tokenizer"
 #Construct a Tokenizer that deals with contractions 
@@ -261,3 +266,29 @@ def sentimental_analysis(string):
             anew_score+=np.array(word_to_attitude[stem(word)])
     return (intensity_score,anew_score)
 
+#get the most common synonym for a given word
+def get_best_synonym(word):
+    syns = []
+    syn_whl_words = []
+    for syn in wn.synsets(word):
+        for l in syn.lemmas():
+            if l.name() != word:
+                syns.append((l.name(),l.count()))
+    #print "Syns" , len(syns)
+    for word in syns:
+        #print word
+        if '_' not in word[0]:
+            #print word[0]
+            syn_whl_words.append(word)
+    syn_whl_words.sort(key=operator.itemgetter(1),reverse=True)
+    
+    return  syn_whl_words[0][0]
+
+#add synonyms to the query
+def augment_query(token_list):
+    new_query = []
+    for token in token_list:
+        new_query.append(token)
+        if freqs[token] < 1000:
+            new_query.append(get_best_synonym(token))
+    return new_query
