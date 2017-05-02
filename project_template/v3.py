@@ -135,13 +135,19 @@ def get_biterms(doc,dictionary):
             
     return result
 
-def topic_given_biterm(z,biterm,theta_z,pWZ):
+negative=np.ones(len(theta_z))
+for i,theta in enumerate(theta_z):
+    if theta<0:
+        theta_z[i]=-1*theta_z[i]
+        negative[i]=-1
+
+Evidence=np.sqrt(np.array(theta_z))*phiwz
+
+def topic_given_biterm(biterm,theta_z,pWZ):
     b0 =biterm[0]
     b1 =biterm[1]
-    evidence =0
-    for i in range(len(theta_z)):
-        evidence+=theta_z[i]*pWZ[b0,i]*pWZ[b1,i]
-    result= theta_z[z]*pWZ[b0,z]*pWZ[b1,z]/evidence*1.0
+    evidence=np.sum(Evidence[b0-168,:]*Evidence[b1-168,:])
+    result= Evidence[b0-168,:]*Evidence[b1-168,:]/evidence*1.0
     return result
 
 
