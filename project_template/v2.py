@@ -51,8 +51,8 @@ vocab_to_index_bi=read('vocab_to_index_1','json'); print 'vocab_to_index for bit
 index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
 contractions_dict=read('contractions','json'); print 'contractions dictionary loaded...'
 # Otherwise use biterm model
-phiwz=read('phiwz','p');print 'word-topic distribution loaded'
-theta_z=read('thetaz','p');print 'topic distribution loaded'
+phiwz=read('phiw_zz','p');print 'word-topic distribution loaded'
+theta_z=read('theta_zz','p');print 'topic distribution loaded'
 biterm_matrix=read('biterm_matrix1','p');print 'biterm_matrix loaded'
 stop_words=read('stop_words','p');print 'stop_words loaded'
 

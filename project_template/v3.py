@@ -12,8 +12,8 @@ from nltk.corpus import wordnet as wn
 import operator
 from stemming.porter2 import stem
 from sklearn.feature_extraction.text import TfidfVectorizer
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-analyzer = SentimentIntensityAnalyzer()  
+# from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+# analyzer = SentimentIntensityAnalyzer()  
 from operator import itemgetter
 # import en_core_web_sm as en_core
 from scipy.sparse.linalg import svds
@@ -299,25 +299,25 @@ def related_topics(query, quoteID, vectorizer=topic_prediction_vectorizer, topic
 
 ##=================================================Other Utility Functions=====================================================
 ## Unstem words,may be used to decode key features
-def unstem(word):
-    return unstem[words]
-## Indicate whether a word is a name entity word or not
-# def isEntity(word):
-#     entities=nlp(word.title())
-#     if entities.ents==():
-#         return False 
-#     else:
-#         return True
-#Takes in the query and quote, compare the sentiments of the query
-def sentimental_analysis(string):
-    #Using Vader's sentiments to display the intensity score 
-    intensity_score=analyzer.polarity_scores(string)
-    #Use the ANEW system to determine various sentimental domain
-    words = [stem(t) for t in regtokenizer.tokenize(expand_contractions(string.lower()))]
-    anew_score = np.zeros((1,3))
-    for word in words:
-        if stem(word) in word_to_attitude.keys():
-            anew_score+=np.array(word_to_attitude[stem(word)])
-    return (intensity_score,anew_score)
+# def unstem(word):
+#     return unstem[words]
+# ## Indicate whether a word is a name entity word or not
+# # def isEntity(word):
+# #     entities=nlp(word.title())
+# #     if entities.ents==():
+# #         return False 
+# #     else:
+# #         return True
+# #Takes in the query and quote, compare the sentiments of the query
+# def sentimental_analysis(string):
+#     #Using Vader's sentiments to display the intensity score 
+#     intensity_score=analyzer.polarity_scores(string)
+#     #Use the ANEW system to determine various sentimental domain
+#     words = [stem(t) for t in regtokenizer.tokenize(expand_contractions(string.lower()))]
+#     anew_score = np.zeros((1,3))
+#     for word in words:
+#         if stem(word) in word_to_attitude.keys():
+#             anew_score+=np.array(word_to_attitude[stem(word)])
+#     return (intensity_score,anew_score)
 
 #
