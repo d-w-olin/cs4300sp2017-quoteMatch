@@ -23,6 +23,8 @@ import pickle
 import scipy.sparse as sps
 import csv
 
+nltk.data.path.append('../nltk_data/')
+
 def read(filename,f):
     with open(filename+'.'+f,'rb') as files:
         if f=='p':
