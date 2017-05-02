@@ -9,6 +9,7 @@ from django.http import JsonResponse
 import urllib
 import wikipedia
 from bs4 import BeautifulSoup
+from .v3 import relevant_author
 
 # Create your views here.
 def index(request):
@@ -20,21 +21,21 @@ def index(request):
         version = request.GET.get('version')
         print 'using version {}'.format(version)
         if version == 'v1':
-            from .v1 import baseIR
+            from .v1 import baseIR as retrieval1
         if version == 'v2':
-            from .v2 import BTMRetrieval
+            from .v2 import BTMRetrieval as retrieval2
         if version == 'v3':
-            from .v3 import BTMRetrieval
+            from .v3 import BTMRetrieval as retrieval3
 
         if request.GET.get('search'):
             search = request.GET.get('search')
 
             if version == 'v1':
-                output_list = baseIR(search)
+                output_list = retrieval1(search)
             if version == 'v2':
-                output_list = BTMRetrieval(search, 100)
+                output_list = retrieval2(search, 100)
             if version == 'v3':
-                output_list = BTMRetrieval(search, 100)
+                output_list = retrieval3(search, 100)
 
             paginator = Paginator(output_list, 15)
             page = request.GET.get('page')
@@ -57,11 +58,12 @@ def getImgSrc(page):
   try:
     return table.find_all('img')[0].get('src')
   except Exception as e:
-    print e
     return 
 
 def getWiki(request):
+    search = request.GET.get('query', None)
     author = request.GET.get('author', None)
+    qID = int(request.GET.get('qID', None))
     try:
         page = wikipedia.page(author)
         pageurl = page.url
@@ -72,15 +74,20 @@ def getWiki(request):
         extraction = 'No information found for '+author+' on Wikipedia.'
 
     finally:
-        topics = ['topic 1']
-        authors = ['author 1', 'author 2', 'author 3']
+
         try:
             src = getImgSrc(page)
-            print 'src is {}!'.format(src)
             assert src != None
         except Exception as e:
-            print e
             src = ''
+
+        try:
+            authors = relevant_author(search,qID)
+            topics = []
+        except Exception as e:
+            print e
+            authors = []
+            topics = []
 
         return JsonResponse({'pageurl': pageurl, 
             'extraction': extraction, 

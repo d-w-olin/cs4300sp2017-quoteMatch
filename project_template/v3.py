@@ -161,12 +161,12 @@ def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=
     if filter_by ==False:
         for index in top20:
             result.append((ID_to_quote[index],ID_to_author[index],index))
-            # print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
+            print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
         return result
     else:
         for index in top20:
             result.append((ID_to_quote[indexes[index]],ID_to_author[indexes[index]],indexes[index]))
-            # print "{}: {}\n\n".format(ID_to_quote[indexes[index]], all_scores[index])
+            print "{}: {}\n\n".format(ID_to_quote[indexes[index]], all_scores[index])
         return result
 
 ##=====================================================Rocchio Update==========================================================
@@ -187,23 +187,35 @@ def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
 
 ##Recommended authors, based on the query and the quote that the user clicks on
 def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction_vectorizer,numReturn=5,similarity_measure=entropy):
-    longstring = query+' '+updated_newIDQuote[ID]
-    new_vector = vectorizer.transform(longstring)[169:] 
+    longstring = "{} {}".format(query, ID_to_quote[ID])
+    print longstring
+    new_vector = vectorizer.transform([longstring]).toarray()[0, 169:]
+    print "created vector"
+    print np.shape(new_vector)
     all_scores = []
-    for row in matrix:
-        all_scores.append(similarity_measure(np.asarray(row).reshape(-1),np.asarray(new_vector)))
+    print "calculating scores"
+    for row in recover_Matrix(matrix, 0, matrix.shape[0]):
+        print type(np.asarray(row).reshape(-1))
+        print type(np.asarray(new_vector[0]))
+        all_scores.append(similarity_measure(np.asarray(row).reshape(-1),np.asarray(new_vector[0])))
+        print "appended"
     
     results=np.asarray(all_scores).argsort()[0:numReturn]
-    return results
+    return results.tolist()
 
 ## Similar authors, based entirely on the authors' textual features
 def similar_author (ID,matrix=author_matrix_compressed,numReturn=5,similarity_measure=entropy):
     all_scores = []
-    author=author_to_index[ID_to_author(ID)]
+    author=author_to_index[ID_to_author[ID]]
     for row in matrix:
         all_scores.append(similarity_measure(np.asarray(row).reshape(-1),np.asarray(matrix[author,:])))
-    
+    print all_scores[:5]
     results=np.asarray(all_scores).argsort()[1:numReturn+1]
+    print results
+
+    for i in range(numReturn):
+        results[i] = ID_to_author[results[i]]
+
     return results
 
 def show_feature_words(author):

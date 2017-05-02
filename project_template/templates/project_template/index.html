@@ -56,7 +56,7 @@
                     {% if output %}
                         {% for quote, author, id in output %}
                             <div class="quote">
-                                <div class="quote-content">
+                                <div class="quote-content" data-track="{{id}}" onclick="authorInfo('{{input}}')">
                                     <p>{{quote}}</p>
                                     <p class="author">by {{author}}</p>
                                 </div>

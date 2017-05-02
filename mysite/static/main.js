@@ -1,3 +1,9 @@
+var query = ''
+
+function authorInfo(input) {
+    query = input;
+}
+
 $(".quote-content").on("click", function(){
     var currentQuote = this;
     console.log(currentQuote);
@@ -16,7 +22,9 @@ $(".quote-content").on("click", function(){
         $.ajax({
             url: "getWiki",
             data: {
-                "author": author
+                "query": query,
+                "author": author,
+                "qID": currentQuote.attributes["data-track"].value
             },
             dataType: "json",
             beforeSend: function() {
@@ -46,7 +54,7 @@ $(".quote-content").on("click", function(){
                     }
                 }
                 if (data.authors.length != 0) {
-                    var similar_authors = "<span class='title'>Similar authors: </span>";
+                    var similar_authors = "<span class='title'>Recommended authors: </span>";
                     data.authors.forEach(function(d, i) {
                         if (i != data.authors.length - 1) {
                             similar_authors += d + " &middot; "
