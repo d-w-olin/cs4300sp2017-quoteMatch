@@ -199,15 +199,18 @@ def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
 ##===================================================Predict Author============================================================
 
 ##Recommended authors, based on the query and the quote that the user clicks on
-def relevant_author (query,ID,matrix,vectorizer,numReturn=5,similarity_measure=entropy):
-    longstring = query+' '+updated_newIDQuote[ID]
-    new_vector = vectorizer.transform([longstring]).toarray()[0,167:] 
+def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction_vectorizer,numReturn=5,similarity_measure=entropy):
+    longstring = query+' '+ID_to_quote[ID]
+    new_vector = vectorizer.transform([longstring]).toarray()[0,167:]
     all_scores = []
     matrix = matrix.todense()
     for row in matrix:
             all_scores.append(similarity_measure(np.asarray(row).reshape(-1)+10**-6,np.asarray(new_vector)+10**-6))
     results=np.asarray(all_scores).argsort()[0:numReturn]
-    return results
+    res = []
+    for i in range(len(results)):
+        res.append(ID_to_author[results[i]])
+    return res
 
 ## Similar authors, based entirely on the authors' textual features
 def similar_author (ID,matrix=author_matrix_compressed,numReturn=5,similarity_measure=entropy):

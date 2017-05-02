@@ -9,7 +9,7 @@ from django.http import JsonResponse
 import urllib
 import wikipedia
 from bs4 import BeautifulSoup
-# from .v3 import relevant_author
+from .v3 import relevant_author
 
 # Create your views here.
 def index(request):
