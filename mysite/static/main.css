@@ -131,6 +131,13 @@ body {
     width: 50px;
 }
 
+#loading-small {
+    display: none;
+    height: 25px;
+    margin: 0 auto;
+    width: 25px;
+}
+
 #wiki-title {
     margin: 5px 0;
 }
@@ -154,6 +161,10 @@ body {
     height: 100%;
     justify-content: center;
     text-align: center;
+}
+
+#wiki-showmore-btn {
+    display: none;
 }
 
 /* FORM STYLE */
