@@ -10,6 +10,7 @@ from stemming.porter2 import stem
 from sklearn.feature_extraction.text import TfidfVectorizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 analyzer = SentimentIntensityAnalyzer()  
+from operator import itemgetter
 # import en_core_web_sm as en_core
 from scipy.sparse.linalg import svds
 # nlp=en_core.load()
@@ -66,12 +67,13 @@ topic_list = read('all_topics_prediction','p'); print 'all topic loaded'
 ID_to_quote=read("ID_to_quote",'p');print 'ID_to_quote loaded'
 ID_to_author=read("ID_to_author",'p');print 'ID_to_author loaded'
 topic_predictor=read("topic_predictor",'p'); print 'topic_predictor loaded'
-vocab_to_index_bi=read('vocab_to_index_1','json'); print 'vocab_to_index for biterm loaded...'
+vocab_to_index = read('vocab_to_index','p');print 'vocab_to_index loaded'
 index_to_vocab=read('index_to_vocab','json'); print 'index_to_vocab loaded...'
 phiwz=read('phiwz','p');print 'word-topic distribution loaded'
 theta_z=read('thetaz','p');print 'topic distribution loaded'        
 biterm_matrix=read('biterm_matrix_full','p');print 'biterm_matrix loaded'
-
+primary_indexes=read('primary_topics','p');print 'primary topics loaded'
+secondary_indexes=read('secondary_topics','p');print 'secondary topics loaded'
 
 print "constructing tokenizer"
 #Construct a Tokenizer that deals with contractions 
@@ -143,40 +145,39 @@ def topic_given_biterm(z,biterm,theta_z,pWZ):
     return result
 
 
-def BTMRetrieval(s,rank,filter_by=False,matrix=biterm_matrix,similarity_measure=entropy,reverse=-1):
+def BTMRetrieval(s,rank,filter_by=False,matrix=bmatrix,similarity_measure=entropy,reverse=-1):
     if filter_by !=False:
-        indexes= np.where(topic_list==filter_by)[0]
-        matrix = np.matrix(matrix)[np.array(indexes),:]
-    query_tokens = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words]
-    result=get_biterms(query_tokens,vocab_to_index_bi)
-    topic_doc=[]
+        all_indices =[]
+        for f in filter_by:
+            main_indexes=primary_indexes[f]
+            second_indexes=secondary_indexes[f]
+            all_indices.extend(main_indexes)
+            all_indices.extend(secondary_indexes)
+        all_indices = list((set(all_indices)))
+        matrix = np.matrix(matrix)[np.array(all_indices),:]
+    bow = [t for t in regtokenizer.tokenize(expand_contractions(s.lower())) if t not in stop_words1]
+    result=get_biterms(bow,vocab_to_index)
+    topic_doc=np.zeros((1,len(theta_z)))
     prior = biterm_prior(result)
-    for z in range(20):
-        s=0
-        for word in result:
-            s+=topic_given_biterm(z,word,theta_z,phiwz)*prior[word]
-        topic_doc.append(s)
+    for word in result:
+            topic_doc+=np.array(topic_given_biterm(word,theta_z,phiwz)*prior[word]) 
     all_scores = []
     for i,data in enumerate(matrix):
-        if similarity_measure(np.asarray(data).reshape(-1),np.asarray(topic_doc).reshape(-1))==float('inf'):
-                all_scores.append(10000) # if the matrix has no biterm in it, then set the divergence to 10000
-        else:
-            all_scores.append(similarity_measure(np.asarray(data).reshape(-1),np.asarray(topic_doc).reshape(-1)))
-    
-
+            all_scores.append(similarity_measure(np.asarray(data).reshape(-1)+10**(-8),np.asarray(topic_doc).reshape(-1))+10**(-8))
     top20=np.asarray(all_scores).argsort()[0:rank]
-    result = []
     if filter_by ==False:
+        print("\n")
         for index in top20:
-            result.append((ID_to_quote[index],ID_to_author[index],index))
-            # print "{}: {}\n\n".format(ID_to_quote[index], all_scores[index])
-        return result
+            print (ID_to_quote[index],all_scores[index])
+            print ('\n')
+        return top20
     else:
+        print("\n")
         for index in top20:
-            result.append((ID_to_quote[indexes[index]],ID_to_author[indexes[index]],indexes[index]))
-            # print "{}: {}\n\n".format(ID_to_quote[indexes[index]], all_scores[index])
-        return result
-
+            print (ID_to_quote[all_indices[index]],all_scores[index])
+            print ('\n')
+        getter = itemgetter(*top20)
+        return list(getter(all_indices))
 ##=====================================================Rocchio Update==========================================================
 ##Use Rocchio updating to update user query
 #def irrelevant(docs, all_docs):
@@ -194,22 +195,15 @@ def Rocchio_updating(docs,query,all_docs,matrix,alpha=1, beta=0.8,theta=0.1):
 ##===================================================Predict Author============================================================
 
 ##Recommended authors, based on the query and the quote that the user clicks on
-def relevant_author (query,ID,matrix=author_matrix,vectorizer=author_prediction_vectorizer,numReturn=5,similarity_measure=entropy):
-    longstring = "{} {}".format(query, ID_to_quote[ID])
-    print longstring
-    new_vector = vectorizer.transform([longstring]).toarray()[0, 169:]
-    print "created vector"
-    print np.shape(new_vector)
+def relevant_author (query,ID,matrix,vectorizer,numReturn=5,similarity_measure=entropy):
+    longstring = query+' '+updated_newIDQuote[ID]
+    new_vector = vectorizer.transform([longstring]).toarray()[0,167:] 
     all_scores = []
-    print "calculating scores"
-    for row in recover_Matrix(matrix, 0, matrix.shape[0]):
-        print type(np.asarray(row).reshape(-1))
-        print type(np.asarray(new_vector[0]))
-        all_scores.append(similarity_measure(np.asarray(row).reshape(-1),np.asarray(new_vector[0])))
-        print "appended"
-    
+    matrix = matrix.todense()
+    for row in matrix:
+            all_scores.append(similarity_measure(np.asarray(row).reshape(-1)+10**-6,np.asarray(new_vector)+10**-6))
     results=np.asarray(all_scores).argsort()[0:numReturn]
-    return results.tolist()
+    return results
 
 ## Similar authors, based entirely on the authors' textual features
 def similar_author (ID,matrix=author_matrix_compressed,numReturn=5,similarity_measure=entropy):
